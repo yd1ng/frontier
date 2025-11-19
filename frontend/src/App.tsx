@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import FloatingChatbot from './components/FloatingChatbot';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -12,12 +13,14 @@ import RecruitDetail from './pages/RecruitDetail';
 import RecruitForm from './pages/RecruitForm';
 import Seats from './pages/Seats';
 import AdminPanel from './pages/AdminPanel';
+import Chatbot from './pages/Chatbot';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
+        <FloatingChatbot />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -65,6 +68,9 @@ function App() {
 
           {/* 좌석 예약 */}
           <Route path="/seats" element={<Seats />} />
+
+          {/* 챗봇 */}
+          <Route path="/chatbot" element={<Chatbot />} />
 
           {/* 관리자 패널 */}
           <Route

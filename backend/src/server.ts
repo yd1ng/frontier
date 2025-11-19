@@ -7,6 +7,7 @@ import authRoutes from './routes/auth';
 import boardRoutes from './routes/boards';
 import recruitRoutes from './routes/recruits';
 import seatRoutes from './routes/seats';
+import chatbotRoutes from './routes/chatbot';
 import { apiLimiter, limitContentSize, sanitizeInput } from './middleware/security';
 import { validateEnv } from './config/validateEnv';
 import { startCleanupScheduler } from './utils/seatCleanup';
@@ -89,6 +90,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
 app.use('/api/recruits', recruitRoutes);
 app.use('/api/seats', seatRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
