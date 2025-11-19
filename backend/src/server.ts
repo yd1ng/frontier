@@ -6,8 +6,10 @@ import mongoSanitize from 'express-mongo-sanitize';
 import authRoutes from './routes/auth';
 import boardRoutes from './routes/boards';
 import recruitRoutes from './routes/recruits';
+import seatRoutes from './routes/seats';
 import { apiLimiter, limitContentSize, sanitizeInput } from './middleware/security';
 import { validateEnv } from './config/validateEnv';
+import { startCleanupScheduler } from './utils/seatCleanup';
 
 // 환경 변수 검증
 const config = validateEnv();
@@ -86,6 +88,7 @@ app.use('/api/', apiLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
 app.use('/api/recruits', recruitRoutes);
+app.use('/api/seats', seatRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -121,6 +124,9 @@ mongoose
     console.log('✅ Connected to MongoDB');
     console.log(`🌍 Environment: ${NODE_ENV}`);
     console.log(`🔒 Security features enabled`);
+    
+    // 좌석 예약 자동 정리 스케줄러 시작 (5분마다)
+    startCleanupScheduler(5);
     
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);

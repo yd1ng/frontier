@@ -10,6 +10,7 @@ import BoardForm from './pages/BoardForm';
 import RecruitList from './pages/RecruitList';
 import RecruitDetail from './pages/RecruitDetail';
 import RecruitForm from './pages/RecruitForm';
+import Seats from './pages/Seats';
 
 function App() {
   return (
@@ -60,6 +61,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* 좌석 예약 */}
+          <Route path="/seats" element={<Seats />} />
         </Routes>
       </div>
     </Router>

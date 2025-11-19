@@ -140,6 +140,10 @@ router.put(
       .optional()
       .isInt({ min: 1 })
       .withMessage('Max members must be at least 1'),
+    body('currentMembers')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Current members must be at least 1'),
   ],
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
@@ -164,11 +168,19 @@ router.put(
         return;
       }
 
-      const { title, content, maxMembers, status, tags, deadline } = req.body;
+      const { title, content, maxMembers, currentMembers, status, tags, deadline } = req.body;
       
       if (title) recruit.title = title;
       if (content) recruit.content = content;
       if (maxMembers) recruit.maxMembers = maxMembers;
+      if (currentMembers !== undefined) {
+        // currentMembers는 maxMembers를 초과할 수 없음
+        if (currentMembers > recruit.maxMembers) {
+          res.status(400).json({ error: 'Current members cannot exceed max members' });
+          return;
+        }
+        recruit.currentMembers = currentMembers;
+      }
       if (status) recruit.status = status;
       if (tags) recruit.tags = tags;
       if (deadline) recruit.deadline = new Date(deadline);

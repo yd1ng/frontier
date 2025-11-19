@@ -39,3 +39,14 @@ Thumbs.db
 *.db
 *.sqlite
 
+# Docker volumes and data
+docker-compose.override.yml
+.docker/
+**/data/
+**/mongodb_data/
+
+# Environment variables (중요!)
+.env
+.env.*
+!.env.example
+

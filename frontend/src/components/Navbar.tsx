@@ -33,6 +33,12 @@ const Navbar = () => {
               >
                 모집
               </Link>
+              <Link
+                to="/seats"
+                className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                좌석 예약
+              </Link>
             </div>
           </div>
 

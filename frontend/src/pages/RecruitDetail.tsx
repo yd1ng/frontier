@@ -10,6 +10,8 @@ const RecruitDetail = () => {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [editingMembers, setEditingMembers] = useState(false);
+  const [currentMembers, setCurrentMembers] = useState(0);
   const { user, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
@@ -23,6 +25,7 @@ const RecruitDetail = () => {
       setLoading(true);
       const data = await recruitService.getRecruit(id!);
       setRecruit(data);
+      setCurrentMembers(data.currentMembers);
     } catch (error) {
       console.error('Failed to load recruit:', error);
     } finally {
@@ -90,6 +93,35 @@ const RecruitDetail = () => {
       console.error('Failed to delete comment:', error);
       alert('댓글 삭제에 실패했습니다.');
     }
+  };
+
+  const handleMembersUpdate = async () => {
+    if (!recruit) return;
+
+    if (currentMembers < 1) {
+      alert('현재 인원은 최소 1명 이상이어야 합니다.');
+      return;
+    }
+
+    if (currentMembers > recruit.maxMembers) {
+      alert('현재 인원은 최대 인원을 초과할 수 없습니다.');
+      return;
+    }
+
+    try {
+      await recruitService.updateRecruit(id!, { currentMembers });
+      setEditingMembers(false);
+      loadRecruit();
+      alert('현재 인원이 업데이트되었습니다.');
+    } catch (error) {
+      console.error('Failed to update members:', error);
+      alert('인원 업데이트에 실패했습니다.');
+    }
+  };
+
+  const cancelMembersEdit = () => {
+    setCurrentMembers(recruit?.currentMembers || 0);
+    setEditingMembers(false);
   };
 
   const formatDate = (dateString: string) => {
@@ -179,11 +211,67 @@ const RecruitDetail = () => {
               <span>{formatDate(recruit.createdAt)}</span>
             </div>
             <div className="flex items-center space-x-4">
-              <span>
-                {recruit.currentMembers}/{recruit.maxMembers}명
-              </span>
               <span>조회 {recruit.views}</span>
               <span>좋아요 {recruit.likes.length}</span>
+            </div>
+          </div>
+          
+          {/* 모집 인원 정보 */}
+          <div className="mt-4 p-4 bg-indigo-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                {editingMembers && isAuthor ? (
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-700">현재 인원:</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max={recruit.maxMembers}
+                        value={currentMembers}
+                        onChange={(e) => setCurrentMembers(parseInt(e.target.value) || 1)}
+                        className="w-20 px-2 py-1 border border-gray-300 rounded-md text-sm"
+                      />
+                      <span className="text-sm text-gray-600">/ {recruit.maxMembers}명</span>
+                    </div>
+                    <button
+                      onClick={handleMembersUpdate}
+                      className="text-sm bg-indigo-600 text-white px-3 py-1 rounded-md hover:bg-indigo-700"
+                    >
+                      저장
+                    </button>
+                    <button
+                      onClick={cancelMembersEdit}
+                      className="text-sm bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400"
+                    >
+                      취소
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-lg font-semibold text-indigo-900">
+                      현재 {recruit.currentMembers}명 / 최대 {recruit.maxMembers}명
+                    </span>
+                    {isAuthor && (
+                      <button
+                        onClick={() => setEditingMembers(true)}
+                        className="text-sm text-indigo-600 hover:text-indigo-800 underline"
+                      >
+                        인원 수정
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+              <div className="text-sm text-gray-600">
+                {recruit.currentMembers >= recruit.maxMembers ? (
+                  <span className="text-red-600 font-medium">✓ 모집 완료</span>
+                ) : (
+                  <span className="text-green-600 font-medium">
+                    ✓ {recruit.maxMembers - recruit.currentMembers}명 더 모집 중
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           {recruit.deadline && (

@@ -62,7 +62,7 @@ export const recruitService = {
     return response.data.recruit;
   },
 
-  async updateRecruit(id: string, data: Partial<CreateRecruitData & { status: string }>) {
+  async updateRecruit(id: string, data: Partial<CreateRecruitData & { status: string; currentMembers: number }>) {
     const response = await api.put(`/recruits/${id}`, data);
     return response.data.recruit;
   },
