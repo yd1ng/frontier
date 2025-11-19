@@ -45,8 +45,17 @@ const Navbar = () => {
           <div className="flex items-center">
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
+                {user?.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    className="text-purple-600 hover:text-purple-800 px-3 py-2 rounded-md text-sm font-medium border border-purple-300 hover:border-purple-400"
+                  >
+                    👑 관리자
+                  </Link>
+                )}
                 <span className="text-gray-700">
                   안녕하세요, <span className="font-semibold">{user?.username}</span>님
+                  {user?.role === 'admin' && <span className="ml-1 text-xs text-purple-600">(관리자)</span>}
                 </span>
                 <button
                   onClick={handleLogout}

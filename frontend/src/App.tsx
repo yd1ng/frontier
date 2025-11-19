@@ -11,6 +11,7 @@ import RecruitList from './pages/RecruitList';
 import RecruitDetail from './pages/RecruitDetail';
 import RecruitForm from './pages/RecruitForm';
 import Seats from './pages/Seats';
+import AdminPanel from './pages/AdminPanel';
 
 function App() {
   return (
@@ -64,6 +65,16 @@ function App() {
 
           {/* 좌석 예약 */}
           <Route path="/seats" element={<Seats />} />
+
+          {/* 관리자 패널 */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminPanel />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>
