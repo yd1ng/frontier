@@ -11,6 +11,7 @@ import chatbotRoutes from './routes/chatbot';
 import { apiLimiter, limitContentSize, sanitizeInput } from './middleware/security';
 import { validateEnv } from './config/validateEnv';
 import { startCleanupScheduler } from './utils/seatCleanup';
+import { initializeSeatsIfEmpty } from './utils/initializeSeats';
 
 // 환경 변수 검증
 const config = validateEnv();
@@ -122,10 +123,13 @@ app.use((req: express.Request, res: express.Response) => {
 // MongoDB connection
 mongoose
   .connect(MONGODB_URI)
-  .then(() => {
+  .then(async () => {
     console.log('✅ Connected to MongoDB');
     console.log(`🌍 Environment: ${NODE_ENV}`);
     console.log(`🔒 Security features enabled`);
+    
+    // 좌석 자동 초기화 (좌석이 없을 경우에만)
+    await initializeSeatsIfEmpty();
     
     // 좌석 예약 자동 정리 스케줄러 시작 (5분마다)
     startCleanupScheduler(5);
