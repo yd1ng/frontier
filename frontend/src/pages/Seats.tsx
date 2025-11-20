@@ -132,23 +132,23 @@ const Seats = () => {
       <div className="space-y-8">
         {/* 상단 섹션 */}
         <div>
-          <h3 className="text-sm font-semibold mb-2 text-gray-600">Section A</h3>
+          <h3 className="text-base font-semibold mb-4 text-appleGray-700">Section A</h3>
           <div className="grid grid-cols-6 gap-3">
             {topSeats.map((seat) => (
               <button
                 key={seat._id}
                 onClick={() => handleSeatClick(seat)}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`p-4 rounded-2xl border-2 transition-all ${
                   seat.isAvailable
-                    ? 'bg-green-50 border-green-300 hover:bg-green-100 cursor-pointer'
+                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 cursor-pointer shadow-apple-sm hover:shadow-apple'
                     : seat.currentUser?._id === user?.id
-                    ? 'bg-blue-500 border-blue-600 text-white cursor-pointer'
-                    : 'bg-red-50 border-red-300 cursor-not-allowed'
+                    ? 'bg-[#007aff] border-[#0051d5] text-white cursor-pointer shadow-apple hover:shadow-apple-lg'
+                    : 'bg-[#ff3b30]/10 border-[#ff3b30] cursor-not-allowed opacity-60'
                 }`}
                 disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
               >
                 <div className="text-center">
-                  <div className="font-bold text-sm">{seat.seatNumber}</div>
+                  <div className="font-semibold text-sm">{seat.seatNumber}</div>
                   {!seat.isAvailable && (
                     <div className="text-xs mt-1">
                       {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
@@ -162,23 +162,23 @@ const Seats = () => {
 
         {/* 하단 섹션 */}
         <div>
-          <h3 className="text-sm font-semibold mb-2 text-gray-600">Section B</h3>
+          <h3 className="text-base font-semibold mb-4 text-appleGray-700">Section B</h3>
           <div className="grid grid-cols-8 gap-3">
             {bottomSeats.map((seat) => (
               <button
                 key={seat._id}
                 onClick={() => handleSeatClick(seat)}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`p-4 rounded-2xl border-2 transition-all ${
                   seat.isAvailable
-                    ? 'bg-green-50 border-green-300 hover:bg-green-100 cursor-pointer'
+                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 cursor-pointer shadow-apple-sm hover:shadow-apple'
                     : seat.currentUser?._id === user?.id
-                    ? 'bg-blue-500 border-blue-600 text-white cursor-pointer'
-                    : 'bg-red-50 border-red-300 cursor-not-allowed'
+                    ? 'bg-[#007aff] border-[#0051d5] text-white cursor-pointer shadow-apple hover:shadow-apple-lg'
+                    : 'bg-[#ff3b30]/10 border-[#ff3b30] cursor-not-allowed opacity-60'
                 }`}
                 disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
               >
                 <div className="text-center">
-                  <div className="font-bold text-sm">{seat.seatNumber}</div>
+                  <div className="font-semibold text-sm">{seat.seatNumber}</div>
                   {!seat.isAvailable && (
                     <div className="text-xs mt-1">
                       {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
@@ -200,27 +200,27 @@ const Seats = () => {
     return (
       <div className="grid grid-cols-6 gap-4">
         {staffSeats.map((seat) => (
-          <button
-            key={seat._id}
-            onClick={() => handleSeatClick(seat)}
-            className={`p-6 rounded-lg border-2 transition-all ${
-              seat.isAvailable
-                ? 'bg-green-50 border-green-300 hover:bg-green-100 cursor-pointer'
-                : seat.currentUser?._id === user?.id
-                ? 'bg-blue-500 border-blue-600 text-white cursor-pointer'
-                : 'bg-red-50 border-red-300 cursor-not-allowed'
-            }`}
-            disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
-          >
-            <div className="text-center">
-              <div className="font-bold">{seat.seatNumber}</div>
-              {!seat.isAvailable && (
-                <div className="text-xs mt-1">
-                  {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
+              <button
+                key={seat._id}
+                onClick={() => handleSeatClick(seat)}
+                className={`p-6 rounded-2xl border-2 transition-all ${
+                  seat.isAvailable
+                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 cursor-pointer shadow-apple-sm hover:shadow-apple'
+                    : seat.currentUser?._id === user?.id
+                    ? 'bg-[#007aff] border-[#0051d5] text-white cursor-pointer shadow-apple hover:shadow-apple-lg'
+                    : 'bg-[#ff3b30]/10 border-[#ff3b30] cursor-not-allowed opacity-60'
+                }`}
+                disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
+              >
+                <div className="text-center">
+                  <div className="font-semibold text-base">{seat.seatNumber}</div>
+                  {!seat.isAvailable && (
+                    <div className="text-xs mt-1">
+                      {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </button>
+              </button>
         ))}
       </div>
     );
@@ -228,31 +228,31 @@ const Seats = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center text-gray-500">로딩 중...</div>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <div className="text-center text-appleGray-700">로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">HSPACE 좌석 예약</h1>
+        <h1 className="text-apple-headline text-[#1d1d1f] mb-6">HSPACE 좌석 예약</h1>
         
         {/* 내 예약 정보 */}
         {myReservation && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="alert alert-info mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-blue-900">현재 예약 좌석</h3>
-                <p className="text-sm text-blue-700 mt-1">
-                  좌석: <span className="font-bold">{myReservation.seatNumber}</span> | 
-                  남은 시간: <span className="font-bold">{getRemainingTime(myReservation.reservedUntil!)}</span>
+                <h3 className="font-semibold text-[#0051d5] mb-1">현재 예약 좌석</h3>
+                <p className="text-sm text-appleGray-700">
+                  좌석: <span className="font-bold text-[#1d1d1f]">{myReservation.seatNumber}</span> | 
+                  남은 시간: <span className="font-bold text-[#1d1d1f]">{getRemainingTime(myReservation.reservedUntil!)}</span>
                 </p>
               </div>
               <button
                 onClick={() => handleReleaseSeat(myReservation.seatNumber)}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className="btn btn-danger text-sm"
               >
                 좌석 반납
               </button>
@@ -263,38 +263,30 @@ const Seats = () => {
         {/* 범례 */}
         <div className="flex items-center gap-6 text-sm mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-50 border-2 border-green-300 rounded"></div>
-            <span>이용 가능</span>
+            <div className="w-4 h-4 bg-[#34c759]/10 border-2 border-[#34c759] rounded-xl"></div>
+            <span className="text-appleGray-700">이용 가능</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 border-2 border-blue-600 rounded"></div>
-            <span>내 좌석</span>
+            <div className="w-4 h-4 bg-[#007aff] border-2 border-[#0051d5] rounded-xl"></div>
+            <span className="text-appleGray-700">내 좌석</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-50 border-2 border-red-300 rounded"></div>
-            <span>사용 중</span>
+            <div className="w-4 h-4 bg-[#ff3b30]/10 border-2 border-[#ff3b30] rounded-xl"></div>
+            <span className="text-appleGray-700">사용 중</span>
           </div>
         </div>
 
         {/* 방 선택 탭 */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-3 mb-8">
           <button
             onClick={() => setSelectedRoom('white')}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              selectedRoom === 'white'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+            className={`btn ${selectedRoom === 'white' ? 'btn-primary' : 'btn-secondary'}`}
           >
             WHITE ROOM (36석)
           </button>
           <button
             onClick={() => setSelectedRoom('staff')}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              selectedRoom === 'staff'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+            className={`btn ${selectedRoom === 'staff' ? 'btn-primary' : 'btn-secondary'}`}
           >
             STAFF ROOM (12석)
           </button>
@@ -302,8 +294,8 @@ const Seats = () => {
       </div>
 
       {/* 좌석 배치도 */}
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-xl font-bold mb-6">
+      <div className="card p-10">
+        <h2 className="text-3xl font-semibold mb-8 text-[#1d1d1f]">
           {selectedRoom === 'white' ? 'WHITE ROOM' : 'STAFF ROOM'}
         </h2>
         {selectedRoom === 'white' ? renderWhiteRoomSeats() : renderStaffRoomSeats()}
@@ -311,21 +303,21 @@ const Seats = () => {
 
       {/* 예약 모달 */}
       {showReserveModal && selectedSeat && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold mb-4">좌석 예약</h3>
-            <p className="text-gray-600 mb-4">
-              좌석 <span className="font-bold text-indigo-600">{selectedSeat.seatNumber}</span>을(를) 예약하시겠습니까?
+        <div className="modal-overlay">
+          <div className="modal-content p-8">
+            <h3 className="text-2xl font-semibold mb-4 text-[#1d1d1f]">좌석 예약</h3>
+            <p className="text-apple-body text-appleGray-700 mb-6">
+              좌석 <span className="font-bold text-[#007aff]">{selectedSeat.seatNumber}</span>을(를) 예약하시겠습니까?
             </p>
             
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#1d1d1f] mb-3">
                 이용 시간
               </label>
               <select
                 value={reserveHours}
                 onChange={(e) => setReserveHours(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="input"
               >
                 <option value={1}>1시간</option>
                 <option value={2}>2시간</option>
@@ -341,7 +333,7 @@ const Seats = () => {
             <div className="flex gap-3">
               <button
                 onClick={handleReserveSeat}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium"
+                className="btn btn-primary flex-1"
               >
                 예약하기
               </button>
@@ -350,7 +342,7 @@ const Seats = () => {
                   setShowReserveModal(false);
                   setSelectedSeat(null);
                 }}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium"
+                className="btn btn-secondary flex-1"
               >
                 취소
               </button>

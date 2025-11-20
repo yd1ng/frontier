@@ -5,28 +5,28 @@ const Home = () => {
   const { isAuthenticated } = useAuthStore();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center">
-          <h1 className="text-6xl font-bold text-white mb-6">
+    <div className="min-h-screen bg-apple">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
+        <div className="text-center animate-fade-in">
+          <h1 className="text-apple-headline mb-6 text-[#1d1d1f]">
             Frontier CTF
           </h1>
-          <p className="text-2xl text-white mb-12">
+          <p className="text-apple-subheadline text-appleGray-700 mb-12 max-w-2xl mx-auto">
             CTF, 워게임, 프로젝트 모집을 위한 커뮤니티 플랫폼
           </p>
 
-          <div className="flex justify-center space-x-4 mb-16">
+          <div className="flex justify-center gap-4 mb-20">
             {isAuthenticated ? (
               <>
                 <Link
                   to="/boards"
-                  className="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition"
+                  className="btn btn-secondary text-lg px-8 py-3.5"
                 >
                   게시판 보기
                 </Link>
                 <Link
                   to="/recruits"
-                  className="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition border-2 border-white"
+                  className="btn btn-primary text-lg px-8 py-3.5"
                 >
                   모집 보기
                 </Link>
@@ -35,13 +35,13 @@ const Home = () => {
               <>
                 <Link
                   to="/register"
-                  className="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition"
+                  className="btn btn-secondary text-lg px-8 py-3.5"
                 >
                   시작하기
                 </Link>
                 <Link
                   to="/login"
-                  className="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition border-2 border-white"
+                  className="btn btn-primary text-lg px-8 py-3.5"
                 >
                   로그인
                 </Link>
@@ -49,25 +49,25 @@ const Home = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-            <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg p-8 text-white">
-              <div className="text-4xl mb-4">📢</div>
-              <h3 className="text-xl font-semibold mb-2">게시판</h3>
-              <p className="text-white text-opacity-90">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="card p-10 text-center hover:shadow-apple-lg transition-all duration-300">
+              <div className="text-5xl mb-6">📢</div>
+              <h3 className="text-2xl font-semibold mb-3 text-[#1d1d1f]">게시판</h3>
+              <p className="text-apple-body text-appleGray-700">
                 공지사항, 익명 게시판, 워게임 & CTF 공유
               </p>
             </div>
-            <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg p-8 text-white">
-              <div className="text-4xl mb-4">👥</div>
-              <h3 className="text-xl font-semibold mb-2">모집</h3>
-              <p className="text-white text-opacity-90">
+            <div className="card p-10 text-center hover:shadow-apple-lg transition-all duration-300">
+              <div className="text-5xl mb-6">👥</div>
+              <h3 className="text-2xl font-semibold mb-3 text-[#1d1d1f]">모집</h3>
+              <p className="text-apple-body text-appleGray-700">
                 CTF, 프로젝트, 스터디 팀원 모집
               </p>
             </div>
-            <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg p-8 text-white">
-              <div className="text-4xl mb-4">🔒</div>
-              <h3 className="text-xl font-semibold mb-2">익명성 보장</h3>
-              <p className="text-white text-opacity-90">
+            <div className="card p-10 text-center hover:shadow-apple-lg transition-all duration-300">
+              <div className="text-5xl mb-6">🔒</div>
+              <h3 className="text-2xl font-semibold mb-3 text-[#1d1d1f]">익명성 보장</h3>
+              <p className="text-apple-body text-appleGray-700">
                 익명 게시판에서 자유롭게 소통하세요
               </p>
             </div>

@@ -73,37 +73,35 @@ const BoardList = () => {
   };
 
   const getCategoryBadge = (cat: string) => {
-    const badges: Record<string, { text: string; color: string }> = {
-      notice: { text: '공지', color: 'bg-red-100 text-red-800' },
-      anonymous: { text: '익명', color: 'bg-gray-100 text-gray-800' },
-      'wargame-ctf': { text: 'CTF', color: 'bg-blue-100 text-blue-800' },
+    const badges: Record<string, { text: string; colorClass: string }> = {
+      notice: { text: '공지', colorClass: 'badge-danger' },
+      anonymous: { text: '익명', colorClass: 'badge' },
+      'wargame-ctf': { text: 'CTF', colorClass: 'badge-primary' },
     };
-    const badge = badges[cat] || { text: cat, color: 'bg-gray-100 text-gray-800' };
+    const badge = badges[cat] || { text: cat, colorClass: 'badge' };
     return (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.color}`}
-      >
+      <span className={`badge ${badge.colorClass}`}>
         {badge.text}
       </span>
     );
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">게시판</h1>
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-apple-headline text-[#1d1d1f]">게시판</h1>
         {isAuthenticated && (
           <Link
             to="/boards/new"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium"
+            className="btn btn-primary"
           >
             글쓰기
           </Link>
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4">
+      <div className="card overflow-hidden">
+        <div className="px-6 py-4 border-b border-appleGray-200">
           <CategoryTabs
             tabs={BOARD_CATEGORIES}
             activeTab={category}
@@ -112,29 +110,29 @@ const BoardList = () => {
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-gray-500">로딩 중...</div>
+          <div className="p-12 text-center text-appleGray-700">로딩 중...</div>
         ) : boards.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-12 text-center text-appleGray-700">
             게시글이 없습니다.
           </div>
         ) : (
           <>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-appleGray-200">
               {boards.map((board) => (
                 <Link
                   key={board._id}
                   to={`/boards/${board._id}`}
-                  className="block px-6 py-4 hover:bg-gray-50 transition"
+                  className="block px-6 py-5 hover:bg-appleGray-50 transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-3 mb-3">
                         {getCategoryBadge(board.category)}
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        <h3 className="text-lg font-semibold text-[#1d1d1f] truncate">
                           {board.title}
                         </h3>
                       </div>
-                      <div className="flex items-center text-sm text-gray-500 space-x-4">
+                      <div className="flex items-center text-sm text-appleGray-700 space-x-4">
                         <span>{board.author.username}</span>
                         <span>조회 {board.views}</span>
                         <span>댓글 {board.comments.length}</span>
@@ -147,7 +145,7 @@ const BoardList = () => {
               ))}
             </div>
 
-            <div className="px-6 py-4">
+            <div className="px-6 py-4 border-t border-appleGray-200">
               <Pagination
                 currentPage={pagination.page}
                 totalPages={pagination.totalPages}

@@ -2,23 +2,427 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", 
+                 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #fafafa;
+    color: #1d1d1f;
+    line-height: 1.47059;
+    font-weight: 400;
+    letter-spacing: -0.022em;
+  }
+
+  code {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 0.9em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.07143;
+    letter-spacing: -0.003em;
+    color: #1d1d1f;
+  }
+
+  h1 {
+    font-size: 56px;
+    line-height: 1.07143;
+    letter-spacing: -0.005em;
+    font-weight: 600;
+  }
+
+  h2 {
+    font-size: 48px;
+    line-height: 1.08349;
+    letter-spacing: -0.003em;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-size: 32px;
+    line-height: 1.125;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  h4 {
+    font-size: 28px;
+    line-height: 1.14286;
+    letter-spacing: 0.007em;
+    font-weight: 600;
+  }
+
+  input, textarea, select, button {
+    font-family: inherit;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #007aff;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* 스크롤바 스타일 - Apple 스타일 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+@layer components {
+  /* Apple 스타일 버튼 */
+  .btn {
+    @apply px-5 py-2.5 rounded-lg font-medium 
+           transition-all duration-200 ease-out
+           focus:outline-none focus:ring-2 focus:ring-offset-2 
+           disabled:opacity-50 disabled:cursor-not-allowed
+           active:scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply bg-[#007aff] hover:bg-[#0051d5] text-white 
+           focus:ring-[#007aff] 
+           shadow-sm hover:shadow-md
+           font-semibold;
+  }
+
+  .btn-secondary {
+    @apply bg-[#f5f5f7] hover:bg-[#e8e8ed] text-[#1d1d1f] 
+           focus:ring-[#86868b] 
+           border border-[#d2d2d7];
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-[#f5f5f7] text-[#007aff] 
+           focus:ring-[#007aff];
+  }
+
+  .btn-success {
+    @apply bg-[#34c759] hover:bg-[#28a745] text-white 
+           focus:ring-[#34c759] shadow-sm;
+  }
+
+  .btn-danger {
+    @apply bg-[#ff3b30] hover:bg-[#d70015] text-white 
+           focus:ring-[#ff3b30] shadow-sm;
+  }
+
+  /* Apple 스타일 입력 필드 */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl
+           bg-white border border-[#d2d2d7]
+           text-[#1d1d1f] placeholder:text-[#86868b]
+           focus:outline-none focus:ring-2 focus:ring-[#007aff] 
+           focus:border-transparent
+           transition-all duration-200
+           disabled:bg-[#f5f5f7] disabled:cursor-not-allowed
+           text-base;
+  }
+
+  .input-error {
+    @apply border-[#ff3b30] focus:ring-[#ff3b30];
+  }
+
+  /* Apple 스타일 카드 */
+  .card {
+    @apply bg-white rounded-2xl 
+           shadow-[0_2px_8px_rgba(0,0,0,0.08)]
+           border border-[#d2d2d7]/50
+           transition-all duration-300 ease-out;
+  }
+
+  .card-hover {
+    @apply hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] 
+           hover:-translate-y-0.5 cursor-pointer;
+  }
+
+  /* Apple 스타일 배지 */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full 
+           text-xs font-semibold
+           bg-[#f5f5f7] text-[#1d1d1f];
+  }
+
+  .badge-primary {
+    @apply bg-[#007aff]/10 text-[#007aff];
+  }
+
+  .badge-success {
+    @apply bg-[#34c759]/10 text-[#34c759];
+  }
+
+  .badge-danger {
+    @apply bg-[#ff3b30]/10 text-[#ff3b30];
+  }
+
+  /* Apple 스타일 알림 */
+  .alert {
+    @apply px-4 py-3 rounded-xl border
+           transition-all duration-200;
+  }
+
+  .alert-success {
+    @apply bg-[#34c759]/10 border-[#34c759]/20 text-[#28a745];
+  }
+
+  .alert-error {
+    @apply bg-[#ff3b30]/10 border-[#ff3b30]/20 text-[#d70015];
+  }
+
+  .alert-info {
+    @apply bg-[#007aff]/10 border-[#007aff]/20 text-[#0051d5];
+  }
+
+  .alert-warning {
+    @apply bg-[#ff9500]/10 border-[#ff9500]/20 text-[#f57900];
+  }
+
+  /* Apple 스타일 모달 */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/40 flex items-center 
+           justify-center z-50 p-4 
+           backdrop-blur-md;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] 
+           max-w-md w-full 
+           transform transition-all animate-modal-in
+           border border-[#d2d2d7]/50;
+  }
+
+  /* Apple 스타일 탭 */
+  .tab {
+    @apply px-4 py-2.5 font-medium transition-all duration-200
+           text-[#86868b] hover:text-[#1d1d1f]
+           border-b-2 border-transparent;
+  }
+
+  .tab-active {
+    @apply text-[#007aff] border-[#007aff] font-semibold;
+  }
+
+  /* Apple 스타일 글래스모피즘 */
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl
+           border border-white/50
+           shadow-[0_8px_32px_rgba(0,0,0,0.12)];
+  }
+
+  /* Apple 스타일 네비게이션 */
+  .navbar {
+    @apply bg-white/80 backdrop-blur-xl
+           border-b border-[#d2d2d7]/50
+           shadow-sm;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer utilities {
+  /* Apple 스타일 애니메이션 */
+  .animate-fade-in {
+    animation: appleFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-slide-up {
+    animation: appleSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-slide-down {
+    animation: appleSlideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-scale-in {
+    animation: appleScaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 텍스트 스타일 */
+  .text-apple-headline {
+    @apply text-5xl font-semibold leading-tight tracking-tight;
+    color: #1d1d1f;
+  }
+
+  .text-apple-subheadline {
+    @apply text-2xl font-medium leading-normal tracking-tight;
+    color: #1d1d1f;
+  }
+
+  .text-apple-body {
+    @apply text-base leading-relaxed tracking-normal;
+    color: #1d1d1f;
+  }
+
+  .text-apple-caption {
+    @apply text-sm leading-normal tracking-normal;
+    color: #86868b;
+  }
+
+  /* Apple 스타일 그림자 */
+  .shadow-apple-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .shadow-apple {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .shadow-apple-lg {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .shadow-apple-xl {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  }
+
+  /* Apple 스타일 그라데이션 */
+  .gradient-apple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .gradient-text-apple {
+    @apply bg-gradient-to-r from-[#007aff] to-[#5856d6] 
+           bg-clip-text text-transparent;
+  }
+
+  /* 스크롤 영역 */
+  .scrollbar-apple {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  .scrollbar-apple::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-apple::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-apple::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  .scrollbar-apple::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  /* Apple 스타일 배경 */
+  .bg-apple {
+    background-color: #fafafa;
+  }
+
+  .bg-apple-surface {
+    background-color: #ffffff;
+  }
+
+  .bg-apple-secondary {
+    background-color: #f5f5f7;
+  }
 }
 
+/* Apple 스타일 키프레임 애니메이션 */
+@keyframes appleFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes appleSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appleSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appleScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes appleModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.93) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-in {
+  animation: appleModalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Apple 스타일 선택 효과 */
+::selection {
+  background-color: rgba(0, 122, 255, 0.2);
+  color: #1d1d1f;
+}
+
+::-moz-selection {
+  background-color: rgba(0, 122, 255, 0.2);
+  color: #1d1d1f;
+}
