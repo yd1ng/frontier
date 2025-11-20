@@ -8,10 +8,12 @@ import boardRoutes from './routes/boards';
 import recruitRoutes from './routes/recruits';
 import seatRoutes from './routes/seats';
 import chatbotRoutes from './routes/chatbot';
+import discordRoutes from './routes/discord';
 import { apiLimiter, limitContentSize, sanitizeInput } from './middleware/security';
 import { validateEnv } from './config/validateEnv';
 import { startCleanupScheduler } from './utils/seatCleanup';
 import { initializeSeatsIfEmpty } from './utils/initializeSeats';
+import discordService from './services/discord.service';
 
 // 환경 변수 검증
 const config = validateEnv();
@@ -92,6 +94,7 @@ app.use('/api/boards', boardRoutes);
 app.use('/api/recruits', recruitRoutes);
 app.use('/api/seats', seatRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/discord', discordRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -133,6 +136,13 @@ mongoose
     
     // 좌석 예약 자동 정리 스케줄러 시작 (5분마다)
     startCleanupScheduler(5);
+    
+    // Discord 자동 동기화 스케줄러 시작 (1시간마다)
+    setTimeout(() => {
+      if (discordService.isConnected()) {
+        discordService.startAutoSync(60);
+      }
+    }, 5000); // Discord Bot 연결 후 5초 대기
     
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);

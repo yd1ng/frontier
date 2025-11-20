@@ -22,6 +22,12 @@ const Navbar = () => {
             </Link>
             <div className="ml-10 flex items-center space-x-4">
               <Link
+                to="/announcements"
+                className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                미션
+              </Link>
+              <Link
                 to="/boards"
                 className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
               >

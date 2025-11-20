@@ -14,6 +14,7 @@ import RecruitForm from './pages/RecruitForm';
 import Seats from './pages/Seats';
 import AdminPanel from './pages/AdminPanel';
 import Chatbot from './pages/Chatbot';
+import Announcements from './pages/Announcements';
 
 function App() {
   return (
@@ -71,6 +72,9 @@ function App() {
 
           {/* 챗봇 */}
           <Route path="/chatbot" element={<Chatbot />} />
+
+          {/* 공지사항 & 미션 */}
+          <Route path="/announcements" element={<Announcements />} />
 
           {/* 관리자 패널 */}
           <Route
