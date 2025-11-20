@@ -110,7 +110,10 @@ router.post(
       }
 
       // JWT 토큰 생성
-      const secret = process.env.JWT_SECRET || 'default_secret';
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        throw new Error('JWT_SECRET is not configured');
+      }
       const token = jwt.sign(
         { userId: user._id, role: user.role },
         secret,
@@ -145,7 +148,10 @@ router.get('/me', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const secret = process.env.JWT_SECRET || 'default_secret';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET is not configured');
+    }
     const decoded = jwt.verify(token, secret) as { userId: string };
 
     const user = await User.findById(decoded.userId).select('-password');

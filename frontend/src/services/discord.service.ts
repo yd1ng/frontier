@@ -5,6 +5,7 @@ export interface DiscordMessage {
   messageId: string;
   channelId: string;
   channelName: string;
+  threadName?: string; // 포럼 포스트 제목
   content: string;
   author: {
     username: string;

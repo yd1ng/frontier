@@ -2,6 +2,8 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { recruitService, Recruit } from '../services/recruit.service';
 import { useAuthStore } from '../store/authStore';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const RecruitDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -299,9 +301,26 @@ const RecruitDetail = () => {
 
         {/* 내용 */}
         <div className="px-6 py-8">
-          <div className="prose max-w-none">
-            <div style={{ whiteSpace: 'pre-wrap' }}>{recruit.content}</div>
+          <div className="prose prose-sm md:prose-base max-w-none">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {recruit.content}
+            </ReactMarkdown>
           </div>
+
+          {/* 이미지 표시 */}
+          {recruit.images && recruit.images.length > 0 && (
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {recruit.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`image-${index}`}
+                  className="w-full rounded-md border border-night cursor-pointer hover:opacity-90"
+                  onClick={() => window.open(image, '_blank')}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 좋아요 버튼 */}
@@ -368,9 +387,11 @@ const RecruitDetail = () => {
                       </button>
                     )}
                 </div>
-                <p className="text-night-muted whitespace-pre-wrap">
-                  {comment.content}
-                </p>
+                <div className="prose prose-sm max-w-none text-night-muted">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {comment.content}
+                  </ReactMarkdown>
+                </div>
               </div>
             ))}
           </div>

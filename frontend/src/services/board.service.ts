@@ -10,6 +10,7 @@ export interface Board {
     username: string;
   };
   isAnonymous: boolean;
+  images?: string[];
   views: number;
   likes: string[];
   comments: Comment[];
@@ -33,6 +34,7 @@ export interface CreateBoardData {
   content: string;
   category: 'notice' | 'anonymous' | 'wargame-ctf';
   isAnonymous?: boolean;
+  images?: string[];
 }
 
 export const boardService = {

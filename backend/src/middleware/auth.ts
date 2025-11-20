@@ -20,7 +20,10 @@ export const authenticateToken = (
       return;
     }
 
-    const secret = process.env.JWT_SECRET || 'default_secret';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET is not configured');
+    }
     const decoded = jwt.verify(token, secret) as {
       userId: string;
       role: string;

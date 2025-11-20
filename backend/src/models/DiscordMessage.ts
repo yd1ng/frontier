@@ -4,6 +4,7 @@ export interface IDiscordMessage extends Document {
   messageId: string;
   channelId: string;
   channelName: string;
+  threadName?: string; // 포럼 포스트 제목
   content: string;
   author: {
     username: string;
@@ -32,6 +33,9 @@ const DiscordMessageSchema = new Schema<IDiscordMessage>(
     channelName: {
       type: String,
       required: true,
+    },
+    threadName: {
+      type: String,
     },
     content: {
       type: String,

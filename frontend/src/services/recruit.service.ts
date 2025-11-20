@@ -13,6 +13,7 @@ export interface Recruit {
   maxMembers: number;
   currentMembers: number;
   tags: string[];
+  images?: string[];
   deadline?: string;
   views: number;
   likes: string[];
@@ -37,6 +38,7 @@ export interface CreateRecruitData {
   category: 'ctf' | 'project' | 'study';
   maxMembers: number;
   tags?: string[];
+  images?: string[];
   deadline?: string;
 }
 

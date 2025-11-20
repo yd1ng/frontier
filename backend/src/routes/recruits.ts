@@ -94,7 +94,7 @@ router.post(
         return;
       }
 
-      const { title, content, category, maxMembers, tags, deadline } = req.body;
+      const { title, content, category, maxMembers, tags, images, deadline } = req.body;
 
       const recruit = new Recruit({
         title,
@@ -104,6 +104,7 @@ router.post(
         maxMembers,
         currentMembers: 1,
         tags: tags || [],
+        images: images || [],
         deadline: deadline ? new Date(deadline) : undefined,
       });
 
@@ -168,11 +169,12 @@ router.put(
         return;
       }
 
-      const { title, content, maxMembers, currentMembers, status, tags, deadline } = req.body;
+      const { title, content, maxMembers, currentMembers, status, tags, images, deadline } = req.body;
       
       if (title) recruit.title = title;
       if (content) recruit.content = content;
       if (maxMembers) recruit.maxMembers = maxMembers;
+      if (images !== undefined) recruit.images = images;
       if (currentMembers !== undefined) {
         // currentMembers는 maxMembers를 초과할 수 없음
         if (currentMembers > recruit.maxMembers) {
