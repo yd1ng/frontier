@@ -89,8 +89,7 @@ router.post(
     } catch (error: any) {
       console.error('Sync Discord messages error:', error);
       res.status(500).json({ 
-        error: 'Failed to sync messages',
-        details: error.message 
+        error: 'Failed to sync messages'
       });
     }
   }

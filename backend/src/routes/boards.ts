@@ -124,7 +124,7 @@ router.post(
         return;
       }
 
-      const { title, content, category, isAnonymous } = req.body;
+      const { title, content, category, isAnonymous, images } = req.body;
 
       // 공지사항은 관리자만 작성 가능
       if (category === 'notice' && req.userRole !== 'admin') {
@@ -138,6 +138,7 @@ router.post(
         category,
         author: req.userId,
         isAnonymous: (isAnonymous === true),
+        images: images || [],
       });
 
       await board.save();
@@ -201,9 +202,10 @@ router.put(
         return;
       }
 
-      const { title, content } = req.body;
+      const { title, content, images } = req.body;
       if (title) board.title = title;
       if (content) board.content = content;
+      if (images !== undefined) board.images = images;
 
       await board.save();
       await board.populate('author', 'username');

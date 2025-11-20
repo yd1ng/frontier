@@ -9,6 +9,7 @@ export interface IRecruit extends Document {
   maxMembers: number;
   currentMembers: number;
   tags: string[];
+  images: string[]; // 이미지 파일 경로 배열
   deadline?: Date;
   views: number;
   likes: mongoose.Types.ObjectId[];
@@ -85,6 +86,10 @@ const RecruitSchema = new Schema<IRecruit>(
         trim: true,
       },
     ],
+    images: {
+      type: [String],
+      default: [],
+    },
     deadline: {
       type: Date,
     },

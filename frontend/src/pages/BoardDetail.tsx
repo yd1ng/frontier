@@ -2,6 +2,8 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { boardService, Board } from '../services/board.service';
 import { useAuthStore } from '../store/authStore';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const BoardDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -178,9 +180,26 @@ const BoardDetail = () => {
 
         {/* 내용 */}
         <div className="px-6 py-8">
-          <div className="prose max-w-none">
-            <div style={{ whiteSpace: 'pre-wrap' }}>{board.content}</div>
+          <div className="prose prose-sm md:prose-base max-w-none">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {board.content}
+            </ReactMarkdown>
           </div>
+
+          {/* 이미지 표시 */}
+          {board.images && board.images.length > 0 && (
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {board.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`image-${index}`}
+                  className="w-full rounded-md border border-gray-300 cursor-pointer hover:opacity-90"
+                  onClick={() => window.open(image, '_blank')}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 좋아요 버튼 */}
@@ -258,9 +277,11 @@ const BoardDetail = () => {
                       </button>
                     )}
                 </div>
-                <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
-                  {comment.content}
-                </p>
+                <div className="prose prose-sm max-w-none text-gray-700">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {comment.content}
+                  </ReactMarkdown>
+                </div>
               </div>
             ))}
           </div>

@@ -1,7 +1,8 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { boardService, CreateBoardData } from '../services/board.service';
 import { useAuthStore } from '../store/authStore';
+import api from '../services/api';
 
 const BoardForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,9 +15,11 @@ const BoardForm = () => {
     content: '',
     category: 'anonymous',
     isAnonymous: false,
+    images: [],
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (isEdit && id) {
@@ -32,12 +35,55 @@ const BoardForm = () => {
         content: board.content,
         category: board.category,
         isAnonymous: board.isAnonymous,
+        images: board.images || [],
       });
     } catch (error) {
       console.error('Failed to load board:', error);
       alert('게시글을 불러오는데 실패했습니다.');
       navigate('/boards');
     }
+  };
+
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    // 최대 5개 제한
+    if ((formData.images?.length || 0) + files.length > 5) {
+      alert('이미지는 최대 5개까지 업로드할 수 있습니다.');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const formDataObj = new FormData();
+      Array.from(files).forEach((file) => {
+        formDataObj.append('images', file);
+      });
+
+      const response = await api.post('/upload', formDataObj, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setFormData({
+        ...formData,
+        images: [...(formData.images || []), ...response.data.images],
+      });
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      alert(error.response?.data?.error || '이미지 업로드에 실패했습니다.');
+    } finally {
+      setUploading(false);
+      // Reset input
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = formData.images?.filter((_, i) => i !== index) || [];
+    setFormData({ ...formData, images: newImages });
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -137,17 +183,72 @@ const BoardForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              내용
+              내용 (마크다운 지원)
             </label>
             <textarea
               value={formData.content}
               onChange={(e) =>
                 setFormData({ ...formData, content: e.target.value })
               }
-              placeholder="내용을 입력하세요"
+              placeholder="내용을 입력하세요&#10;&#10;💡 마크다운 문법 사용 가능:&#10;# 제목&#10;**굵게** *기울임*&#10;- 목록&#10;```코드```&#10;[링크](URL)"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               rows={15}
             />
+            <p className="mt-1 text-xs text-gray-500">
+              💡 마크다운 문법을 사용할 수 있습니다: # 제목, **굵게**, *기울임*, - 목록, [링크](URL), ```코드블록```
+            </p>
+          </div>
+
+          {/* 이미지 업로드 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              이미지 (최대 5개, 각 5MB 이하)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              disabled={uploading || (formData.images?.length || 0) >= 5}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
+            />
+            {uploading && (
+              <p className="text-sm text-gray-500 mt-2">업로드 중...</p>
+            )}
+
+            {/* 이미지 미리보기 */}
+            {formData.images && formData.images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                {formData.images.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={image}
+                      alt={`preview-${index}`}
+                      className="w-full h-32 object-cover rounded-md border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {formData.category !== 'notice' && (

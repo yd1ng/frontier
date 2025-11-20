@@ -5,8 +5,8 @@ services:
     image: mongo:7
     container_name: frontier-ctf-mongodb
     restart: unless-stopped
-    ports:
-      - '27017:27017'
+    # ports:
+    #   - '27017:27017'  # 보안: 외부 노출 제거 (내부 네트워크만 접근 가능)
     volumes:
       - mongodb_data:/data/db
     environment:
@@ -22,6 +22,8 @@ services:
     restart: unless-stopped
     ports:
       - '5000:5000'
+    volumes:
+      - uploads_data:/app/uploads
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/frontier-ctf
       - JWT_SECRET=${JWT_SECRET}
@@ -50,6 +52,7 @@ services:
 
 volumes:
   mongodb_data:
+  uploads_data:
 
 networks:
   frontier-network:

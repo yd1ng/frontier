@@ -3,12 +3,15 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
+import path from 'path';
+import fs from 'fs';
 import authRoutes from './routes/auth';
 import boardRoutes from './routes/boards';
 import recruitRoutes from './routes/recruits';
 import seatRoutes from './routes/seats';
 import chatbotRoutes from './routes/chatbot';
 import discordRoutes from './routes/discord';
+import uploadRoutes from './routes/upload';
 import { apiLimiter, limitContentSize, sanitizeInput } from './middleware/security';
 import { validateEnv } from './config/validateEnv';
 import { startCleanupScheduler } from './utils/seatCleanup';
@@ -88,6 +91,15 @@ app.use(sanitizeInput);
 // API Rate Limiting
 app.use('/api/', apiLimiter);
 
+// uploads 디렉토리 생성 (없으면)
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// 정적 파일 제공 (이미지)
+app.use('/uploads', express.static(uploadsDir));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
@@ -95,6 +107,7 @@ app.use('/api/recruits', recruitRoutes);
 app.use('/api/seats', seatRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/discord', discordRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

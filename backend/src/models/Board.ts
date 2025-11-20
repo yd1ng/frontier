@@ -6,6 +6,7 @@ export interface IBoard extends Document {
   category: 'notice' | 'anonymous' | 'wargame-ctf';
   author: mongoose.Types.ObjectId | string;
   isAnonymous: boolean;
+  images: string[]; // 이미지 파일 경로 배열
   views: number;
   likes: mongoose.Types.ObjectId[];
   comments: IComment[];
@@ -68,6 +69,10 @@ const BoardSchema = new Schema<IBoard>(
     isAnonymous: {
       type: Boolean,
       default: false,
+    },
+    images: {
+      type: [String],
+      default: [],
     },
     views: {
       type: Number,

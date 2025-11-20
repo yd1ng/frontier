@@ -1,52 +1,46 @@
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { recruitService, CreateRecruitData } from '../services/recruit.service';
+import { boardService, CreateBoardData } from '../services/board.service';
+import { useAuthStore } from '../store/authStore';
 import api from '../services/api';
 
-const RecruitForm = () => {
+const BoardForm = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const isEdit = !!id;
 
-  const [formData, setFormData] = useState<CreateRecruitData & { status?: string }>({
+  const [formData, setFormData] = useState<CreateBoardData>({
     title: '',
     content: '',
-    category: 'ctf',
-    maxMembers: 5,
-    tags: [],
+    category: 'anonymous',
+    isAnonymous: false,
     images: [],
-    deadline: '',
   });
-  const [tagInput, setTagInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (isEdit && id) {
-      loadRecruit();
+      loadBoard();
     }
   }, [id]);
 
-  const loadRecruit = async () => {
+  const loadBoard = async () => {
     try {
-      const recruit = await recruitService.getRecruit(id!);
+      const board = await boardService.getBoard(id!);
       setFormData({
-        title: recruit.title,
-        content: recruit.content,
-        category: recruit.category,
-        maxMembers: recruit.maxMembers,
-        tags: recruit.tags,
-        images: recruit.images || [],
-        deadline: recruit.deadline
-          ? new Date(recruit.deadline).toISOString().slice(0, 16)
-          : '',
-        status: recruit.status,
+        title: board.title,
+        content: board.content,
+        category: board.category,
+        isAnonymous: board.isAnonymous,
+        images: board.images || [],
       });
     } catch (error) {
-      console.error('Failed to load recruit:', error);
-      alert('모집글을 불러오는데 실패했습니다.');
-      navigate('/recruits');
+      console.error('Failed to load board:', error);
+      alert('게시글을 불러오는데 실패했습니다.');
+      navigate('/boards');
     }
   };
 
@@ -54,6 +48,7 @@ const RecruitForm = () => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    // 최대 5개 제한
     if ((formData.images?.length || 0) + files.length > 5) {
       alert('이미지는 최대 5개까지 업로드할 수 있습니다.');
       return;
@@ -81,6 +76,7 @@ const RecruitForm = () => {
       alert(error.response?.data?.error || '이미지 업로드에 실패했습니다.');
     } finally {
       setUploading(false);
+      // Reset input
       e.target.value = '';
     }
   };
@@ -99,62 +95,35 @@ const RecruitForm = () => {
       return;
     }
 
-    if (formData.maxMembers < 1) {
-      setError('최대 인원은 1명 이상이어야 합니다.');
+    if (formData.category === 'notice' && user?.role !== 'admin') {
+      setError('공지사항은 관리자만 작성할 수 있습니다.');
       return;
     }
 
     try {
       setLoading(true);
-      const submitData: any = {
-        title: formData.title,
-        content: formData.content,
-        category: formData.category,
-        maxMembers: formData.maxMembers,
-        tags: formData.tags,
-        deadline: formData.deadline || undefined,
-      };
-
       if (isEdit) {
-        submitData.status = formData.status;
-        await recruitService.updateRecruit(id!, submitData);
-        alert('모집글이 수정되었습니다.');
+        await boardService.updateBoard(id!, formData);
+        alert('게시글이 수정되었습니다.');
       } else {
-        const recruit = await recruitService.createRecruit(submitData);
-        alert('모집글이 작성되었습니다.');
-        navigate(`/recruits/${recruit._id}`);
+        const board = await boardService.createBoard(formData);
+        alert('게시글이 작성되었습니다.');
+        navigate(`/boards/${board._id}`);
         return;
       }
-      navigate(`/recruits/${id}`);
+      navigate(`/boards/${id}`);
     } catch (err: any) {
-      setError(err.response?.data?.error || '모집글 작성에 실패했습니다.');
+      setError(err.response?.data?.error || '게시글 작성에 실패했습니다.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...(formData.tags || []), tagInput.trim()],
-      });
-      setTagInput('');
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags?.filter((t) => t !== tag) || [],
-    });
   };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-4">
         <Link
-          to={isEdit ? `/recruits/${id}` : '/recruits'}
+          to={isEdit ? `/boards/${id}` : '/boards'}
           className="text-indigo-600 hover:text-indigo-800"
         >
           ← 뒤로가기
@@ -163,7 +132,7 @@ const RecruitForm = () => {
 
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          {isEdit ? '모집글 수정' : '모집글 작성'}
+          {isEdit ? '게시글 수정' : '게시글 작성'}
         </h1>
 
         {error && (
@@ -180,34 +149,21 @@ const RecruitForm = () => {
             <select
               value={formData.category}
               onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value as any })
+                setFormData({
+                  ...formData,
+                  category: e.target.value as any,
+                })
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               disabled={isEdit}
             >
-              <option value="ctf">CTF</option>
-              <option value="project">프로젝트</option>
-              <option value="study">스터디</option>
+              {user?.role === 'admin' && (
+                <option value="notice">공지사항</option>
+              )}
+              <option value="anonymous">익명 게시판</option>
+              <option value="wargame-ctf">워게임 & CTF</option>
             </select>
           </div>
-
-          {isEdit && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                모집 상태
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="recruiting">모집중</option>
-                <option value="closed">마감</option>
-              </select>
-            </div>
-          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -227,20 +183,17 @@ const RecruitForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              내용 (마크다운 지원)
+              내용
             </label>
             <textarea
               value={formData.content}
               onChange={(e) =>
                 setFormData({ ...formData, content: e.target.value })
               }
-              placeholder="내용을 입력하세요&#10;&#10;💡 마크다운 문법 사용 가능:&#10;# 제목&#10;**굵게** *기울임*&#10;- 목록&#10;```코드```&#10;[링크](URL)"
+              placeholder="내용을 입력하세요"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               rows={15}
             />
-            <p className="mt-1 text-xs text-gray-500">
-              💡 마크다운 문법을 사용할 수 있습니다: # 제목, **굵게**, *기울임*, - 목록, [링크](URL), ```코드블록```
-            </p>
           </div>
 
           {/* 이미지 업로드 */}
@@ -260,12 +213,13 @@ const RecruitForm = () => {
               <p className="text-sm text-gray-500 mt-2">업로드 중...</p>
             )}
 
+            {/* 이미지 미리보기 */}
             {formData.images && formData.images.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
                 {formData.images.map((image, index) => (
                   <div key={index} className="relative group">
                     <img
-                      src={image}
+                      src={`http://localhost:5000${image}`}
                       alt={`preview-${index}`}
                       className="w-full h-32 object-cover rounded-md border border-gray-300"
                     />
@@ -294,83 +248,25 @@ const RecruitForm = () => {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              모집 인원
-            </label>
-            <input
-              type="number"
-              value={formData.maxMembers}
-              onChange={(e) =>
-                setFormData({ ...formData, maxMembers: parseInt(e.target.value) })
-              }
-              min="1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              마감일 (선택사항)
-            </label>
-            <input
-              type="datetime-local"
-              value={formData.deadline}
-              onChange={(e) =>
-                setFormData({ ...formData, deadline: e.target.value })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              태그
-            </label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddTag();
+          {formData.category !== 'notice' && (
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.isAnonymous}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isAnonymous: e.target.checked })
                   }
-                }}
-                placeholder="태그 입력 후 추가 버튼 클릭"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                type="button"
-                onClick={handleAddTag}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md"
-              >
-                추가
-              </button>
+                  className="mr-2"
+                />
+                <span className="text-sm text-gray-700">익명으로 작성</span>
+              </label>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800"
-                >
-                  #{tag}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    className="ml-2 text-indigo-600 hover:text-indigo-800"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
+          )}
 
           <div className="flex justify-end space-x-4">
             <Link
-              to={isEdit ? `/recruits/${id}` : '/recruits'}
+              to={isEdit ? `/boards/${id}` : '/boards'}
               className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
             >
               취소
@@ -389,5 +285,5 @@ const RecruitForm = () => {
   );
 };
 
-export default RecruitForm;
+export default BoardForm;
 
