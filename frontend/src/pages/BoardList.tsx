@@ -73,23 +73,22 @@ const BoardList = () => {
   };
 
   const getCategoryBadge = (cat: string) => {
-    const badges: Record<string, { text: string; colorClass: string }> = {
-      notice: { text: '공지', colorClass: 'badge-danger' },
-      anonymous: { text: '익명', colorClass: 'badge' },
-      'wargame-ctf': { text: 'CTF', colorClass: 'badge-primary' },
+    const badges: Record<string, { text: string; className: string }> = {
+      notice: { text: '공지', className: 'chip bg-[#ff6cab]/20 text-[#ffb3d0]' },
+      anonymous: { text: '익명', className: 'chip chip-neutral' },
+      'wargame-ctf': { text: 'CTF', className: 'chip bg-[#5dd9f5]/15 text-[#9cecff]' },
     };
-    const badge = badges[cat] || { text: cat, colorClass: 'badge' };
-    return (
-      <span className={`badge ${badge.colorClass}`}>
-        {badge.text}
-      </span>
-    );
+    const badge = badges[cat] || { text: cat, className: 'chip chip-neutral' };
+    return <span className={badge.className}>{badge.text}</span>;
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-night">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-apple-headline text-[#1d1d1f]">게시판</h1>
+        <div>
+          <p className="text-night-muted uppercase tracking-[0.4em] text-xs mb-2">COMMUNITY</p>
+          <h1 className="text-4xl font-bold text-night-heading">게시판</h1>
+        </div>
         {isAuthenticated && (
           <Link
             to="/boards/new"
@@ -100,8 +99,8 @@ const BoardList = () => {
         )}
       </div>
 
-      <div className="card overflow-hidden">
-        <div className="px-6 py-4 border-b border-appleGray-200">
+      <div className="card overflow-hidden bg-surface-2 border border-night">
+        <div className="px-6 py-4 border-b border-night">
           <CategoryTabs
             tabs={BOARD_CATEGORIES}
             activeTab={category}
@@ -110,29 +109,29 @@ const BoardList = () => {
         </div>
 
         {loading ? (
-          <div className="p-12 text-center text-appleGray-700">로딩 중...</div>
+          <div className="p-12 text-center text-night-muted">로딩 중...</div>
         ) : boards.length === 0 ? (
-          <div className="p-12 text-center text-appleGray-700">
+          <div className="p-12 text-center text-night-muted">
             게시글이 없습니다.
           </div>
         ) : (
           <>
-            <div className="divide-y divide-appleGray-200">
+            <div className="divide-y divide-[#252d44]">
               {boards.map((board) => (
                 <Link
                   key={board._id}
                   to={`/boards/${board._id}`}
-                  className="block px-6 py-5 hover:bg-appleGray-50 transition-colors"
+                  className="block px-6 py-5 hover:bg-[#1a1f2f] transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-3">
                         {getCategoryBadge(board.category)}
-                        <h3 className="text-lg font-semibold text-[#1d1d1f] truncate">
+                        <h3 className="text-lg font-semibold text-night-heading truncate">
                           {board.title}
                         </h3>
                       </div>
-                      <div className="flex items-center text-sm text-appleGray-700 space-x-4">
+                      <div className="flex flex-wrap items-center text-sm text-night-muted gap-4">
                         <span>{board.author.username}</span>
                         <span>조회 {board.views}</span>
                         <span>댓글 {board.comments.length}</span>
@@ -145,7 +144,7 @@ const BoardList = () => {
               ))}
             </div>
 
-            <div className="px-6 py-4 border-t border-appleGray-200">
+            <div className="px-6 py-4 border-t border-night">
               <Pagination
                 currentPage={pagination.page}
                 totalPages={pagination.totalPages}

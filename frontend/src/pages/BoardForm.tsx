@@ -74,30 +74,28 @@ const BoardForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-night">
       <div className="mb-4">
         <Link
           to={isEdit ? `/boards/${id}` : '/boards'}
-          className="text-indigo-600 hover:text-indigo-800"
+          className="text-night-muted hover:text-night"
         >
           ← 뒤로가기
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <div className="card bg-surface-2 border border-night p-8 shadow-card">
+        <h1 className="text-3xl font-semibold text-night-heading mb-6">
           {isEdit ? '게시글 수정' : '게시글 작성'}
         </h1>
 
         {error && (
-          <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
+          <div className="alert alert-error mb-4">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               카테고리
             </label>
             <select
@@ -108,7 +106,7 @@ const BoardForm = () => {
                   category: e.target.value as any,
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input bg-[#0f1626]"
               disabled={isEdit}
             >
               {user?.role === 'admin' && (
@@ -120,7 +118,7 @@ const BoardForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               제목
             </label>
             <input
@@ -130,13 +128,13 @@ const BoardForm = () => {
                 setFormData({ ...formData, title: e.target.value })
               }
               placeholder="제목을 입력하세요"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input"
               maxLength={200}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               내용
             </label>
             <textarea
@@ -145,23 +143,23 @@ const BoardForm = () => {
                 setFormData({ ...formData, content: e.target.value })
               }
               placeholder="내용을 입력하세요"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input min-h-[320px]"
               rows={15}
             />
           </div>
 
           {formData.category !== 'notice' && (
             <div>
-              <label className="flex items-center">
+              <label className="flex items-center text-night-muted">
                 <input
                   type="checkbox"
                   checked={formData.isAnonymous}
                   onChange={(e) =>
                     setFormData({ ...formData, isAnonymous: e.target.checked })
                   }
-                  className="mr-2"
+                  className="mr-2 accent-[#7c5dfa]"
                 />
-                <span className="text-sm text-gray-700">익명으로 작성</span>
+                <span className="text-sm">익명으로 작성</span>
               </label>
             </div>
           )}
@@ -169,14 +167,14 @@ const BoardForm = () => {
           <div className="flex justify-end space-x-4">
             <Link
               to={isEdit ? `/boards/${id}` : '/boards'}
-              className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="btn btn-secondary"
             >
               취소
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary"
             >
               {loading ? '처리 중...' : isEdit ? '수정하기' : '작성하기'}
             </button>

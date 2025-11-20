@@ -17,25 +17,21 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    // 이메일 검증
     if (!isValidEmail(email)) {
       setError('올바른 이메일 형식이 아닙니다.');
       return;
     }
 
-    // 사용자명 검증
     if (username.length < 3 || username.length > 20) {
       setError('사용자명은 3-20자 사이여야 합니다.');
       return;
     }
 
-    // 사용자명 특수문자 검증
     if (!/^[a-zA-Z0-9가-힣_-]+$/.test(username)) {
       setError('사용자명은 영문, 한글, 숫자, 언더스코어, 하이픈만 사용할 수 있습니다.');
       return;
     }
 
-    // 비밀번호 검증
     if (password !== confirmPassword) {
       setError('비밀번호가 일치하지 않습니다.');
       return;
@@ -59,18 +55,18 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-apple py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-night py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 animate-fade-in">
-        <div className="card p-10">
+        <div className="card p-10 glass-panel">
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-semibold text-[#1d1d1f] mb-2">
+            <h2 className="text-4xl font-semibold text-night-heading mb-2">
               회원가입
             </h2>
-            <p className="text-apple-caption">
+            <p className="text-night-muted text-sm">
               이미 계정이 있으신가요?{' '}
               <Link
                 to="/login"
-                className="font-medium text-[#007aff] hover:text-[#0051d5] transition-colors"
+                className="text-[#7c5dfa] hover:text-[#5dd9f5] transition-colors"
               >
                 로그인하기
               </Link>

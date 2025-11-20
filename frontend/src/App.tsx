@@ -19,7 +19,7 @@ import Announcements from './pages/Announcements';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-apple">
+      <div className="min-h-screen bg-night text-night font-sans">
         <Navbar />
         <FloatingChatbot />
         <Routes>

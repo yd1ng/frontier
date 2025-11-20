@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { seatService, Seat } from '../services/seat.service';
 import { useAuthStore } from '../store/authStore';
 
@@ -121,7 +121,7 @@ const Seats = () => {
 
   // WHITE ROOM 좌석 배치 (이미지 기준)
   const renderWhiteRoomSeats = () => {
-    const whiteSeats = seats.filter(s => s.room === 'white');
+    const whiteSeats = seats.filter((s: Seat) => s.room === 'white');
     
     // 상단 12석 (2줄)
     const topSeats = whiteSeats.slice(0, 12);
@@ -132,18 +132,18 @@ const Seats = () => {
       <div className="space-y-8">
         {/* 상단 섹션 */}
         <div>
-          <h3 className="text-base font-semibold mb-4 text-appleGray-700">Section A</h3>
+          <h3 className="text-base font-semibold mb-4 text-night-muted">Section A</h3>
           <div className="grid grid-cols-6 gap-3">
-            {topSeats.map((seat) => (
+            {topSeats.map((seat: Seat) => (
               <button
                 key={seat._id}
                 onClick={() => handleSeatClick(seat)}
-                className={`p-4 rounded-2xl border-2 transition-all ${
+                className={`p-4 rounded-2xl border-2 transition-all shadow-card ${
                   seat.isAvailable
-                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 cursor-pointer shadow-apple-sm hover:shadow-apple'
+                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 text-night cursor-pointer'
                     : seat.currentUser?._id === user?.id
-                    ? 'bg-[#007aff] border-[#0051d5] text-white cursor-pointer shadow-apple hover:shadow-apple-lg'
-                    : 'bg-[#ff3b30]/10 border-[#ff3b30] cursor-not-allowed opacity-60'
+                    ? 'night-gradient text-[#05070f] border-[#7c5dfa] cursor-pointer shadow-neon'
+                    : 'bg-[#28131f] border-[#ff5f7e] cursor-not-allowed opacity-70 text-night-muted'
                 }`}
                 disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
               >
@@ -162,18 +162,18 @@ const Seats = () => {
 
         {/* 하단 섹션 */}
         <div>
-          <h3 className="text-base font-semibold mb-4 text-appleGray-700">Section B</h3>
+          <h3 className="text-base font-semibold mb-4 text-night-muted">Section B</h3>
           <div className="grid grid-cols-8 gap-3">
-            {bottomSeats.map((seat) => (
+            {bottomSeats.map((seat: Seat) => (
               <button
                 key={seat._id}
                 onClick={() => handleSeatClick(seat)}
-                className={`p-4 rounded-2xl border-2 transition-all ${
+                className={`p-4 rounded-2xl border-2 transition-all shadow-card ${
                   seat.isAvailable
-                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 cursor-pointer shadow-apple-sm hover:shadow-apple'
+                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 text-night cursor-pointer'
                     : seat.currentUser?._id === user?.id
-                    ? 'bg-[#007aff] border-[#0051d5] text-white cursor-pointer shadow-apple hover:shadow-apple-lg'
-                    : 'bg-[#ff3b30]/10 border-[#ff3b30] cursor-not-allowed opacity-60'
+                    ? 'night-gradient text-[#05070f] border-[#7c5dfa] cursor-pointer shadow-neon'
+                    : 'bg-[#28131f] border-[#ff5f7e] cursor-not-allowed opacity-70 text-night-muted'
                 }`}
                 disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
               >
@@ -195,32 +195,32 @@ const Seats = () => {
 
   // STAFF ROOM 좌석 배치
   const renderStaffRoomSeats = () => {
-    const staffSeats = seats.filter(s => s.room === 'staff');
+    const staffSeats = seats.filter((s: Seat) => s.room === 'staff');
     
     return (
       <div className="grid grid-cols-6 gap-4">
-        {staffSeats.map((seat) => (
-              <button
-                key={seat._id}
-                onClick={() => handleSeatClick(seat)}
-                className={`p-6 rounded-2xl border-2 transition-all ${
-                  seat.isAvailable
-                    ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 cursor-pointer shadow-apple-sm hover:shadow-apple'
-                    : seat.currentUser?._id === user?.id
-                    ? 'bg-[#007aff] border-[#0051d5] text-white cursor-pointer shadow-apple hover:shadow-apple-lg'
-                    : 'bg-[#ff3b30]/10 border-[#ff3b30] cursor-not-allowed opacity-60'
-                }`}
-                disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
-              >
-                <div className="text-center">
-                  <div className="font-semibold text-base">{seat.seatNumber}</div>
-                  {!seat.isAvailable && (
-                    <div className="text-xs mt-1">
-                      {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
-                    </div>
-                  )}
+        {staffSeats.map((seat: Seat) => (
+          <button
+            key={seat._id}
+            onClick={() => handleSeatClick(seat)}
+            className={`p-6 rounded-2xl border-2 transition-all shadow-card ${
+              seat.isAvailable
+                ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 text-night cursor-pointer'
+                : seat.currentUser?._id === user?.id
+                ? 'night-gradient text-[#05070f] border-[#7c5dfa] cursor-pointer shadow-neon'
+                : 'bg-[#28131f] border-[#ff5f7e] cursor-not-allowed opacity-70 text-night-muted'
+            }`}
+            disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
+          >
+            <div className="text-center">
+              <div className="font-semibold text-base">{seat.seatNumber}</div>
+              {!seat.isAvailable && (
+                <div className="text-xs mt-1">
+                  {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
                 </div>
-              </button>
+              )}
+            </div>
+          </button>
         ))}
       </div>
     );
@@ -229,25 +229,25 @@ const Seats = () => {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-        <div className="text-center text-appleGray-700">로딩 중...</div>
+        <div className="text-center text-night-muted">로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-night">
       <div className="mb-8">
-        <h1 className="text-apple-headline text-[#1d1d1f] mb-6">HSPACE 좌석 예약</h1>
+        <h1 className="text-4xl font-bold text-night-heading mb-6">HSPACE 좌석 예약</h1>
         
         {/* 내 예약 정보 */}
         {myReservation && (
           <div className="alert alert-info mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-[#0051d5] mb-1">현재 예약 좌석</h3>
-                <p className="text-sm text-appleGray-700">
-                  좌석: <span className="font-bold text-[#1d1d1f]">{myReservation.seatNumber}</span> | 
-                  남은 시간: <span className="font-bold text-[#1d1d1f]">{getRemainingTime(myReservation.reservedUntil!)}</span>
+                <h3 className="font-semibold text-night-heading mb-1">현재 예약 좌석</h3>
+                <p className="text-sm text-night-muted">
+                  좌석: <span className="font-bold text-night">{myReservation.seatNumber}</span> | 
+                  남은 시간: <span className="font-bold text-night">{getRemainingTime(myReservation.reservedUntil!)}</span>
                 </p>
               </div>
               <button
@@ -261,19 +261,20 @@ const Seats = () => {
         )}
 
         {/* 범례 */}
-        <div className="flex items-center gap-6 text-sm mb-6">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#34c759]/10 border-2 border-[#34c759] rounded-xl"></div>
-            <span className="text-appleGray-700">이용 가능</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#007aff] border-2 border-[#0051d5] rounded-xl"></div>
-            <span className="text-appleGray-700">내 좌석</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#ff3b30]/10 border-2 border-[#ff3b30] rounded-xl"></div>
-            <span className="text-appleGray-700">사용 중</span>
-          </div>
+        <div className="flex flex-wrap items-center gap-5 text-sm mb-6 text-night-muted">
+          {[
+            { label: '이용 가능', color: '#34c759' },
+            { label: '내 좌석', color: '#7c5dfa' },
+            { label: '사용 중', color: '#ff5f7e' },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-full border-2"
+                style={{ borderColor: item.color }}
+              ></span>
+              <span>{item.label}</span>
+            </div>
+          ))}
         </div>
 
         {/* 방 선택 탭 */}
@@ -294,8 +295,8 @@ const Seats = () => {
       </div>
 
       {/* 좌석 배치도 */}
-      <div className="card p-10">
-        <h2 className="text-3xl font-semibold mb-8 text-[#1d1d1f]">
+      <div className="card p-10 bg-surface-2 border border-night">
+        <h2 className="text-3xl font-semibold mb-8 text-night-heading">
           {selectedRoom === 'white' ? 'WHITE ROOM' : 'STAFF ROOM'}
         </h2>
         {selectedRoom === 'white' ? renderWhiteRoomSeats() : renderStaffRoomSeats()}
@@ -305,18 +306,18 @@ const Seats = () => {
       {showReserveModal && selectedSeat && (
         <div className="modal-overlay">
           <div className="modal-content p-8">
-            <h3 className="text-2xl font-semibold mb-4 text-[#1d1d1f]">좌석 예약</h3>
-            <p className="text-apple-body text-appleGray-700 mb-6">
-              좌석 <span className="font-bold text-[#007aff]">{selectedSeat.seatNumber}</span>을(를) 예약하시겠습니까?
+            <h3 className="text-2xl font-semibold mb-4 text-night-heading">좌석 예약</h3>
+            <p className="text-night-muted mb-6">
+              좌석 <span className="font-bold text-[#7c5dfa]">{selectedSeat.seatNumber}</span>을(를) 예약하시겠습니까?
             </p>
             
             <div className="mb-6">
-              <label className="block text-sm font-medium text-[#1d1d1f] mb-3">
+              <label className="block text-sm font-medium text-night-heading mb-3">
                 이용 시간
               </label>
               <select
                 value={reserveHours}
-                onChange={(e) => setReserveHours(Number(e.target.value))}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => setReserveHours(Number(e.target.value))}
                 className="input"
               >
                 <option value={1}>1시간</option>

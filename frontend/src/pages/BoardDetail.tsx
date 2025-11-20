@@ -127,49 +127,49 @@ const BoardDetail = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-4">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-night">
+      <div className="mb-5">
         <Link
           to="/boards"
-          className="text-indigo-600 hover:text-indigo-800"
+          className="text-night-muted hover:text-night-heading transition-colors"
         >
           ← 목록으로
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="card bg-surface-2 border border-night shadow-card overflow-hidden">
         {/* 헤더 */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-5 border-b border-night bg-surface">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-night-muted">
               {getCategoryName(board.category)}
             </span>
             {(isAuthor || isAdmin) && (
-              <div className="flex space-x-2">
+              <div className="flex space-x-3 text-sm">
                 <Link
                   to={`/boards/${id}/edit`}
-                  className="text-sm text-indigo-600 hover:text-indigo-800"
+                  className="text-night-muted hover:text-night-heading"
                 >
                   수정
                 </Link>
                 <button
                   onClick={handleDelete}
-                  className="text-sm text-red-600 hover:text-red-800"
+                  className="text-[#ff8ca0] hover:text-[#ffb3c3]"
                 >
                   삭제
                 </button>
               </div>
             )}
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-semibold text-night-heading mb-4">
             {board.title}
           </h1>
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <div className="flex items-center space-x-4">
-              <span>{board.author.username}</span>
+          <div className="flex flex-wrap items-center justify-between text-sm text-night-muted gap-3">
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="font-medium text-night">{board.author.username}</span>
               <span>{formatDate(board.createdAt)}</span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-4">
               <span>조회 {board.views}</span>
               <span>좋아요 {board.likes.length}</span>
             </div>
@@ -177,18 +177,18 @@ const BoardDetail = () => {
         </div>
 
         {/* 내용 */}
-        <div className="px-6 py-8">
-          <div className="prose max-w-none">
-            <div style={{ whiteSpace: 'pre-wrap' }}>{board.content}</div>
+        <div className="px-6 py-10 bg-surface">
+          <div className="max-w-none leading-relaxed text-night" style={{ whiteSpace: 'pre-wrap' }}>
+            {board.content}
           </div>
         </div>
 
         {/* 좋아요 버튼 */}
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-6 border-t border-night bg-surface">
           <button
             onClick={handleLike}
             disabled={!isAuthenticated}
-            className="flex items-center space-x-2 mx-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-secondary w-full sm:w-auto mx-auto flex items-center justify-center gap-2"
           >
             <span>👍</span>
             <span>좋아요 {board.likes.length}</span>
@@ -196,36 +196,35 @@ const BoardDetail = () => {
         </div>
 
         {/* 댓글 */}
-        <div className="px-6 py-4 border-t border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">
+        <div className="px-6 py-6 border-t border-night bg-surface">
+          <h3 className="text-xl font-semibold mb-6 text-night-heading">
             댓글 {board.comments.length}
           </h3>
 
           {isAuthenticated && (
-            <form onSubmit={handleCommentSubmit} className="mb-6">
+            <form onSubmit={handleCommentSubmit} className="mb-8 space-y-3">
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="댓글을 입력하세요"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                rows={3}
+                className="input min-h-[130px] resize-none"
               />
-              <div className="flex items-center justify-between mt-2">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 {board.category !== 'notice' && (
-                  <label className="flex items-center">
+                  <label className="flex items-center text-sm text-night-muted">
                     <input
                       type="checkbox"
                       checked={isAnonymous}
                       onChange={(e) => setIsAnonymous(e.target.checked)}
-                      className="mr-2"
+                      className="mr-2 accent-[#7c5dfa]"
                     />
-                    <span className="text-sm text-gray-600">익명으로 작성</span>
+                    익명으로 작성
                   </label>
                 )}
                 <button
                   type="submit"
                   disabled={submitting || !comment.trim()}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn btn-primary text-sm px-5"
                 >
                   {submitting ? '작성 중...' : '댓글 작성'}
                 </button>
@@ -237,14 +236,14 @@ const BoardDetail = () => {
             {board.comments.map((comment) => (
               <div
                 key={comment._id}
-                className="bg-gray-50 rounded-lg p-4"
+                className="rounded-2xl border border-night bg-[#151f33] p-4"
               >
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start justify-between mb-3">
                   <div>
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-night">
                       {comment.author.username}
                     </span>
-                    <span className="text-sm text-gray-500 ml-2">
+                    <span className="text-sm text-night-muted ml-3">
                       {formatDate(comment.createdAt)}
                     </span>
                   </div>
@@ -252,13 +251,13 @@ const BoardDetail = () => {
                     (user?.id === comment.author._id || isAdmin) && (
                       <button
                         onClick={() => handleCommentDelete(comment._id)}
-                        className="text-sm text-red-600 hover:text-red-800"
+                        className="text-sm text-[#ff8ca0] hover:text-[#ffb3c3]"
                       >
                         삭제
                       </button>
                     )}
                 </div>
-                <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
+                <p className="text-night-muted leading-relaxed whitespace-pre-wrap">
                   {comment.content}
                 </p>
               </div>

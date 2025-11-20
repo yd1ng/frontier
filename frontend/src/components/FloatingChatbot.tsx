@@ -98,7 +98,7 @@ const FloatingChatbot = () => {
       {/* 플로팅 챗봇 버튼 */}
       <button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 w-16 h-16 bg-[#007aff] hover:bg-[#0051d5] text-white rounded-full shadow-apple-lg flex items-center justify-center text-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-50"
+        className="fixed bottom-6 right-6 w-16 h-16 night-gradient text-[#05070f] rounded-full shadow-neon flex items-center justify-center text-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-50"
         aria-label="챗봇 열기"
       >
         {isOpen ? '✕' : '🤖'}
@@ -106,9 +106,9 @@ const FloatingChatbot = () => {
 
       {/* 챗봇 팝업 */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[600px] card flex flex-col z-50 animate-slide-up">
+        <div className="fixed bottom-24 right-6 w-96 h-[600px] card flex flex-col z-50 animate-fade-up bg-surface-2 border border-night shadow-card">
           {/* 헤더 */}
-          <div className="bg-[#007aff] px-5 py-4 rounded-t-2xl flex items-center justify-between">
+          <div className="night-gradient px-5 py-4 rounded-t-2xl flex items-center justify-between">
             <div>
               <h3 className="text-white font-semibold flex items-center gap-2">
                 <span>🤖</span>
@@ -127,7 +127,7 @@ const FloatingChatbot = () => {
           </div>
 
           {/* 메시지 영역 */}
-          <div className="flex-1 overflow-y-auto p-5 bg-appleGray-50 scrollbar-apple">
+          <div className="flex-1 overflow-y-auto p-5 bg-surface scrollbar-night">
             <div className="space-y-4">
               {messages.map((message, index) => (
                 <div
@@ -137,14 +137,14 @@ const FloatingChatbot = () => {
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                       message.role === 'user'
-                        ? 'bg-[#007aff] text-white'
-                        : 'bg-white border border-appleGray-200 text-[#1d1d1f] shadow-apple-sm'
+                        ? 'night-gradient text-[#05070f]'
+                        : 'bg-[#1b2033] border border-night text-night shadow-card'
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
                     <p
                       className={`text-xs mt-2 ${
-                        message.role === 'user' ? 'text-white/70' : 'text-appleGray-700'
+                        message.role === 'user' ? 'text-[#05070f]/70' : 'text-night-muted'
                       }`}
                     >
                       {formatTime(message.timestamp)}
@@ -154,11 +154,11 @@ const FloatingChatbot = () => {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-appleGray-200 rounded-2xl px-4 py-3 shadow-apple-sm">
+                  <div className="bg-[#1b2033] border border-night rounded-2xl px-4 py-3 shadow-card">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 bg-appleGray-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-appleGray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-appleGray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-night-muted rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-night-muted rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-night-muted rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -169,14 +169,14 @@ const FloatingChatbot = () => {
 
           {/* 빠른 질문 */}
           {messages.length <= 1 && (
-            <div className="px-5 py-3 bg-appleGray-50 border-t border-appleGray-200">
-              <p className="text-xs text-appleGray-700 mb-2 font-medium">💡 빠른 질문:</p>
+            <div className="px-5 py-3 bg-surface border-t border-night">
+              <p className="text-xs text-night-muted mb-2 font-medium">💡 빠른 질문:</p>
               <div className="flex flex-wrap gap-2">
                 {quickQuestions.map((question, index) => (
                   <button
                     key={index}
                     onClick={() => handleQuickQuestion(question)}
-                    className="text-xs bg-white hover:bg-appleGray-100 border border-appleGray-300 hover:border-[#007aff]/30 text-appleGray-700 hover:text-[#007aff] px-3 py-1.5 rounded-full transition-colors"
+                    className="text-xs bg-[#1b2033] hover:bg-[#222842] border border-night hover:border-[#7c5dfa]/40 text-night-muted hover:text-night px-3 py-1.5 rounded-full transition-colors"
                   >
                     {question}
                   </button>
@@ -186,9 +186,9 @@ const FloatingChatbot = () => {
           )}
 
           {/* 입력 영역 */}
-          <div className="p-4 bg-white border-t border-appleGray-200 rounded-b-2xl">
+          <div className="p-4 bg-surface border-t border-night rounded-b-2xl">
             {!isAuthenticated ? (
-              <div className="text-center text-sm text-appleGray-700">
+              <div className="text-center text-sm text-night-muted">
                 로그인이 필요합니다
               </div>
             ) : (
