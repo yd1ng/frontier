@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { discordService, DiscordMessage } from '../services/discord.service';
 import { useAuthStore } from '../store/authStore';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Announcements = () => {
   const [missions, setMissions] = useState<DiscordMessage[]>([]);
@@ -63,6 +65,13 @@ const Announcements = () => {
       key={message._id}
       className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
     >
+      {/* 포스트 제목 */}
+      {message.threadName && (
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
+          {message.threadName}
+        </h2>
+      )}
+
       {/* 작성자 정보 */}
       <div className="flex items-center mb-4">
         {message.author.avatar && (
@@ -80,8 +89,13 @@ const Announcements = () => {
 
       {/* 메시지 내용 */}
       {message.content && (
-        <div className="prose max-w-none mb-4">
-          <p className="text-gray-700 whitespace-pre-wrap">{message.content}</p>
+        <div className="prose prose-sm md:prose-base max-w-none mb-4">
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]}
+            className="text-gray-700"
+          >
+            {message.content}
+          </ReactMarkdown>
         </div>
       )}
 
@@ -97,16 +111,22 @@ const Announcements = () => {
                 <h3 className="font-bold text-lg mb-2">{embed.title}</h3>
               )}
               {embed.description && (
-                <p className="text-gray-700 whitespace-pre-wrap mb-2">
-                  {embed.description}
-                </p>
+                <div className="prose prose-sm max-w-none mb-2">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {embed.description}
+                  </ReactMarkdown>
+                </div>
               )}
               {embed.fields && embed.fields.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                   {embed.fields.map((field: any, fieldIdx: number) => (
                     <div key={fieldIdx}>
                       <p className="font-semibold text-sm">{field.name}</p>
-                      <p className="text-sm text-gray-600">{field.value}</p>
+                      <div className="prose prose-sm max-w-none text-sm text-gray-600">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {field.value}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                   ))}
                 </div>

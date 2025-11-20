@@ -225,10 +225,17 @@ class DiscordService {
 
   private async saveMessage(message: Message, channelConfig: { id: string; name: string; type: string }) {
     try {
+      // 스레드 이름 가져오기 (포럼 포스트인 경우)
+      let threadName: string | undefined;
+      if (message.channel.isThread()) {
+        threadName = (message.channel as ThreadChannel).name;
+      }
+
       const messageData = {
         messageId: message.id,
         channelId: channelConfig.id,
         channelName: channelConfig.name,
+        threadName: threadName, // 포럼 포스트 제목
         content: message.content,
         author: {
           username: message.author.username,
