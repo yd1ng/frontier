@@ -63,7 +63,7 @@ const Announcements = () => {
   const renderMessage = (message: DiscordMessage) => (
     <div
       key={message._id}
-      className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+      className="card bg-surface-2 border border-night p-6 hover:shadow-neon/30 transition-shadow"
     >
       {/* 포스트 제목 */}
       {message.threadName && (
@@ -78,22 +78,19 @@ const Announcements = () => {
           <img
             src={message.author.avatar}
             alt={message.author.username}
-            className="w-10 h-10 rounded-full mr-3"
+            className="w-10 h-10 rounded-full mr-3 border border-night"
           />
         )}
         <div>
-          <p className="font-semibold text-gray-900">{message.author.username}</p>
-          <p className="text-sm text-gray-500">{formatDate(message.timestamp)}</p>
+          <p className="font-semibold text-night-heading">{message.author.username}</p>
+          <p className="text-sm text-night-muted">{formatDate(message.timestamp)}</p>
         </div>
       </div>
 
       {/* 메시지 내용 */}
       {message.content && (
-        <div className="prose prose-sm md:prose-base max-w-none mb-4">
-          <ReactMarkdown 
-            remarkPlugins={[remarkGfm]}
-            className="text-gray-700"
-          >
+        <div className="max-w-none mb-4 leading-relaxed text-night prose prose-invert">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {message.content}
           </ReactMarkdown>
         </div>
@@ -105,13 +102,13 @@ const Announcements = () => {
           {message.embeds.map((embed, idx) => (
             <div
               key={idx}
-              className="border-l-4 border-indigo-600 bg-gray-50 p-4 rounded"
+              className="border-l-4 border-[#7c5dfa] bg-[#1b233a] p-4 rounded-xl"
             >
               {embed.title && (
-                <h3 className="font-bold text-lg mb-2">{embed.title}</h3>
+                <h3 className="font-bold text-lg mb-2 text-night-heading">{embed.title}</h3>
               )}
               {embed.description && (
-                <div className="prose prose-sm max-w-none mb-2">
+                <div className="prose prose-sm max-w-none mb-2 text-night-muted">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {embed.description}
                   </ReactMarkdown>
@@ -121,8 +118,8 @@ const Announcements = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                   {embed.fields.map((field: any, fieldIdx: number) => (
                     <div key={fieldIdx}>
-                      <p className="font-semibold text-sm">{field.name}</p>
-                      <div className="prose prose-sm max-w-none text-sm text-gray-600">
+                      <p className="font-semibold text-sm text-night">{field.name}</p>
+                      <div className="prose prose-sm max-w-none text-sm text-night-muted">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {field.value}
                         </ReactMarkdown>
@@ -152,7 +149,7 @@ const Announcements = () => {
               href={attachment.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-indigo-600 hover:text-indigo-800"
+              className="flex items-center text-night hover:text-night-heading"
             >
               <svg
                 className="w-5 h-5 mr-2"
@@ -177,25 +174,25 @@ const Announcements = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center text-gray-500">로딩 중...</div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-night">
+        <div className="text-center text-night-muted">로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-night">
       {/* 헤더 */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">
-             Frontier 미션
+          <h1 className="text-3xl font-bold text-night-heading">
+            Frontier 미션
           </h1>
           {user?.role === 'admin' && (
             <button
               onClick={handleSync}
               disabled={syncing || !discordConnected}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="btn btn-primary font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               {syncing ? (
                 <>
@@ -235,7 +232,7 @@ const Announcements = () => {
               discordConnected ? 'bg-green-500' : 'bg-red-500'
             }`}
           ></span>
-          <span className="text-gray-600">
+          <span className="text-night-muted">
             {discordConnected
               ? 'Discord 연결됨'
               : 'Discord 연결 안 됨 (캐시된 데이터 표시)'}
@@ -246,12 +243,12 @@ const Announcements = () => {
       {/* 메시지 목록 */}
       {missions.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">아직 미션이 없습니다.</p>
-          <p className="text-sm text-gray-400 mt-2">
+          <p className="text-night-muted text-lg">아직 미션이 없습니다.</p>
+          <p className="text-sm text-night-muted/70 mt-2">
             관리자가 동기화 버튼을 눌러 미션을 가져오세요.
           </p>
           {!discordConnected && (
-            <p className="text-sm text-red-400 mt-2">
+            <p className="text-sm text-[#ff8ca0] mt-2">
               Discord Bot이 연결되지 않았습니다.
             </p>
           )}

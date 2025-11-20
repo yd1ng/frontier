@@ -120,30 +120,28 @@ const BoardForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-night">
       <div className="mb-4">
         <Link
           to={isEdit ? `/boards/${id}` : '/boards'}
-          className="text-indigo-600 hover:text-indigo-800"
+          className="text-night-muted hover:text-night"
         >
           ← 뒤로가기
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <div className="card bg-surface-2 border border-night p-8 shadow-card">
+        <h1 className="text-3xl font-semibold text-night-heading mb-6">
           {isEdit ? '게시글 수정' : '게시글 작성'}
         </h1>
 
         {error && (
-          <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
+          <div className="alert alert-error mb-4">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               카테고리
             </label>
             <select
@@ -154,7 +152,7 @@ const BoardForm = () => {
                   category: e.target.value as any,
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input bg-[#0f1626]"
               disabled={isEdit}
             >
               {user?.role === 'admin' && (
@@ -166,7 +164,7 @@ const BoardForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               제목
             </label>
             <input
@@ -176,13 +174,13 @@ const BoardForm = () => {
                 setFormData({ ...formData, title: e.target.value })
               }
               placeholder="제목을 입력하세요"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input"
               maxLength={200}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               내용 (마크다운 지원)
             </label>
             <textarea
@@ -190,18 +188,20 @@ const BoardForm = () => {
               onChange={(e) =>
                 setFormData({ ...formData, content: e.target.value })
               }
-              placeholder="내용을 입력하세요&#10;&#10;💡 마크다운 문법 사용 가능:&#10;# 제목&#10;**굵게** *기울임*&#10;- 목록&#10;```코드```&#10;[링크](URL)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder={
+                '내용을 입력하세요\n\n💡 마크다운 문법 사용 가능:\n# 제목\n**굵게** *기울임*\n- 목록\n```코드```\n[링크](URL)'
+              }
+              className="input min-h-[320px] font-mono text-sm"
               rows={15}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-night-muted">
               💡 마크다운 문법을 사용할 수 있습니다: # 제목, **굵게**, *기울임*, - 목록, [링크](URL), ```코드블록```
             </p>
           </div>
 
           {/* 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               이미지 (최대 5개, 각 5MB 이하)
             </label>
             <input
@@ -210,10 +210,10 @@ const BoardForm = () => {
               multiple
               onChange={handleImageUpload}
               disabled={uploading || (formData.images?.length || 0) >= 5}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
+              className="block w-full text-sm text-night-muted file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#1f2843] file:text-night hover:file:bg-[#2a3352] disabled:opacity-50"
             />
             {uploading && (
-              <p className="text-sm text-gray-500 mt-2">업로드 중...</p>
+              <p className="text-sm text-night-muted mt-2">업로드 중...</p>
             )}
 
             {/* 이미지 미리보기 */}
@@ -224,12 +224,12 @@ const BoardForm = () => {
                     <img
                       src={image}
                       alt={`preview-${index}`}
-                      className="w-full h-32 object-cover rounded-md border border-gray-300"
+                      className="w-full h-32 object-cover rounded-md border border-night"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 bg-[#ff5f7e] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <svg
                         className="w-4 h-4"
@@ -253,16 +253,16 @@ const BoardForm = () => {
 
           {formData.category !== 'notice' && (
             <div>
-              <label className="flex items-center">
+              <label className="flex items-center text-night-muted">
                 <input
                   type="checkbox"
                   checked={formData.isAnonymous}
                   onChange={(e) =>
                     setFormData({ ...formData, isAnonymous: e.target.checked })
                   }
-                  className="mr-2"
+                  className="mr-2 accent-[#7c5dfa]"
                 />
-                <span className="text-sm text-gray-700">익명으로 작성</span>
+                <span className="text-sm">익명으로 작성</span>
               </label>
             </div>
           )}
@@ -270,14 +270,14 @@ const BoardForm = () => {
           <div className="flex justify-end space-x-4">
             <Link
               to={isEdit ? `/boards/${id}` : '/boards'}
-              className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="btn btn-secondary"
             >
               취소
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary"
             >
               {loading ? '처리 중...' : isEdit ? '수정하기' : '작성하기'}
             </button>

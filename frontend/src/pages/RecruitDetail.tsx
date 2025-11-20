@@ -144,44 +144,44 @@ const RecruitDetail = () => {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center text-gray-500">로딩 중...</div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-night">
+        <div className="text-center text-night-muted">로딩 중...</div>
       </div>
     );
   }
 
   if (!recruit) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center text-gray-500">모집글을 찾을 수 없습니다.</div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-night">
+        <div className="text-center text-night-muted">모집글을 찾을 수 없습니다.</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-night">
       <div className="mb-4">
         <Link
           to="/recruits"
-          className="text-indigo-600 hover:text-indigo-800"
+          className="text-night-muted hover:text-night-heading"
         >
           ← 목록으로
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="card bg-surface-2 border border-night overflow-hidden">
         {/* 헤더 */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-5 border-b border-night bg-surface">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-night-muted">
                 {getCategoryName(recruit.category)}
               </span>
               <span
-                className={`px-2 py-1 text-xs font-medium rounded ${
+                className={`px-3 py-1 text-xs font-semibold rounded-full ${
                   recruit.status === 'recruiting'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
+                    ? 'bg-[#1f4634] text-[#4dd4ac]'
+                    : 'bg-[#2a2f43] text-night-muted'
                 }`}
               >
                 {recruit.status === 'recruiting' ? '모집중' : '마감'}
@@ -204,10 +204,10 @@ const RecruitDetail = () => {
               </div>
             )}
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-semibold text-night-heading mb-4">
             {recruit.title}
           </h1>
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between text-sm text-night-muted">
             <div className="flex items-center space-x-4">
               <span>{recruit.author.username}</span>
               <span>{formatDate(recruit.createdAt)}</span>
@@ -217,7 +217,7 @@ const RecruitDetail = () => {
               <span>좋아요 {recruit.likes.length}</span>
             </div>
           </div>
-          
+
           {/* 모집 인원 정보 */}
           <div className="mt-4 p-4 bg-indigo-50 rounded-lg">
             <div className="flex items-center justify-between">
@@ -225,16 +225,16 @@ const RecruitDetail = () => {
                 {editingMembers && isAuthor ? (
                   <>
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-gray-700">현재 인원:</span>
+                <span className="text-sm font-medium text-night">현재 인원:</span>
                       <input
                         type="number"
                         min="1"
                         max={recruit.maxMembers}
                         value={currentMembers}
                         onChange={(e) => setCurrentMembers(parseInt(e.target.value) || 1)}
-                        className="w-20 px-2 py-1 border border-gray-300 rounded-md text-sm"
+                        className="w-20 px-2 py-1 border border-night rounded-md text-sm bg-[#101727] text-night text-center"
                       />
-                      <span className="text-sm text-gray-600">/ {recruit.maxMembers}명</span>
+                      <span className="text-sm text-night-muted">/ {recruit.maxMembers}명</span>
                     </div>
                     <button
                       onClick={handleMembersUpdate}
@@ -244,7 +244,7 @@ const RecruitDetail = () => {
                     </button>
                     <button
                       onClick={cancelMembersEdit}
-                      className="text-sm bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400"
+                      className="text-sm bg-[#273152] text-night px-3 py-1 rounded-md hover:bg-[#2f3a63] transition-colors"
                     >
                       취소
                     </button>
@@ -265,7 +265,7 @@ const RecruitDetail = () => {
                   </>
                 )}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-night-muted">
                 {recruit.currentMembers >= recruit.maxMembers ? (
                   <span className="text-red-600 font-medium">✓ 모집 완료</span>
                 ) : (
@@ -285,7 +285,7 @@ const RecruitDetail = () => {
 
         {/* 태그 */}
         {recruit.tags.length > 0 && (
-          <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
+          <div className="px-6 py-4 bg-surface border-b border-night">
             <div className="flex flex-wrap gap-2">
               {recruit.tags.map((tag, index) => (
                 <span
@@ -315,7 +315,7 @@ const RecruitDetail = () => {
                   key={index}
                   src={image}
                   alt={`image-${index}`}
-                  className="w-full rounded-md border border-gray-300 cursor-pointer hover:opacity-90"
+                  className="w-full rounded-md border border-night cursor-pointer hover:opacity-90"
                   onClick={() => window.open(image, '_blank')}
                 />
               ))}
@@ -324,11 +324,11 @@ const RecruitDetail = () => {
         </div>
 
         {/* 좋아요 버튼 */}
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-night bg-surface">
           <button
             onClick={handleLike}
             disabled={!isAuthenticated}
-            className="flex items-center space-x-2 mx-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-secondary flex items-center space-x-2 mx-auto"
           >
             <span>👍</span>
             <span>좋아요 {recruit.likes.length}</span>
@@ -336,7 +336,7 @@ const RecruitDetail = () => {
         </div>
 
         {/* 댓글 */}
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-night bg-surface">
           <h3 className="text-lg font-semibold mb-4">
             댓글 {recruit.comments.length}
           </h3>
@@ -347,14 +347,14 @@ const RecruitDetail = () => {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="댓글을 입력하세요"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="input min-h-[120px] resize-none"
                 rows={3}
               />
               <div className="flex justify-end mt-2">
                 <button
                   type="submit"
                   disabled={submitting || !comment.trim()}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn btn-primary text-sm px-5"
                 >
                   {submitting ? '작성 중...' : '댓글 작성'}
                 </button>
@@ -366,14 +366,14 @@ const RecruitDetail = () => {
             {recruit.comments.map((comment) => (
               <div
                 key={comment._id}
-                className="bg-gray-50 rounded-lg p-4"
+                className="rounded-2xl border border-night bg-[#151f33] p-4"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-night">
                       {comment.author.username}
                     </span>
-                    <span className="text-sm text-gray-500 ml-2">
+                    <span className="text-sm text-night-muted ml-2">
                       {formatDate(comment.createdAt)}
                     </span>
                   </div>
@@ -387,7 +387,7 @@ const RecruitDetail = () => {
                       </button>
                     )}
                 </div>
-                <div className="prose prose-sm max-w-none text-gray-700">
+                <div className="prose prose-sm max-w-none text-night-muted">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {comment.content}
                   </ReactMarkdown>

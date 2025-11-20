@@ -11,20 +11,17 @@ interface CategoryTabsProps {
 
 const CategoryTabs = ({ tabs, activeTab, onChange }: CategoryTabsProps) => {
   return (
-    <div className="border-b border-gray-200">
-      <nav className="-mb-px flex space-x-8">
+    <div className="border-b border-night">
+      <nav className="-mb-px flex space-x-6">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => onChange(tab.value)}
-            className={`
-              whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-              ${
-                activeTab === tab.value
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }
-            `}
+            className={`tab ${
+              activeTab === tab.value
+                ? 'tab-active text-night-heading border-[#7c5dfa]'
+                : 'text-night-muted'
+            }`}
           >
             {tab.label}
           </button>

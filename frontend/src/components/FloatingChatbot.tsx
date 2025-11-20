@@ -98,7 +98,7 @@ const FloatingChatbot = () => {
       {/* 플로팅 챗봇 버튼 */}
       <button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full shadow-lg flex items-center justify-center text-2xl transition-all duration-300 hover:scale-110 z-50"
+        className="fixed bottom-6 right-6 w-16 h-16 night-gradient text-[#05070f] rounded-full shadow-neon flex items-center justify-center text-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-50"
         aria-label="챗봇 열기"
       >
         {isOpen ? '✕' : '🤖'}
@@ -106,15 +106,15 @@ const FloatingChatbot = () => {
 
       {/* 챗봇 팝업 */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[600px] bg-white rounded-lg shadow-2xl flex flex-col z-50 animate-slideUp">
+        <div className="fixed bottom-24 right-6 w-96 h-[600px] card flex flex-col z-50 animate-fade-up bg-surface-2 border border-night shadow-card">
           {/* 헤더 */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 rounded-t-lg flex items-center justify-between">
+          <div className="night-gradient px-5 py-4 rounded-t-2xl flex items-center justify-between">
             <div>
-              <h3 className="text-white font-bold flex items-center gap-2">
+              <h3 className="text-white font-semibold flex items-center gap-2">
                 <span>🤖</span>
                 <span>HSPACE 챗봇</span>
               </h3>
-              <p className="text-indigo-100 text-xs mt-0.5">
+              <p className="text-white/80 text-xs mt-1">
                 무엇이든 물어보세요!
               </p>
             </div>
@@ -127,24 +127,24 @@ const FloatingChatbot = () => {
           </div>
 
           {/* 메시지 영역 */}
-          <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-            <div className="space-y-3">
+          <div className="flex-1 overflow-y-auto p-5 bg-surface scrollbar-night">
+            <div className="space-y-4">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-lg px-3 py-2 ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                       message.role === 'user'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-white border border-gray-200 text-gray-900'
+                        ? 'night-gradient text-[#05070f]'
+                        : 'bg-[#1b2033] border border-night text-night shadow-card'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                    <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
                     <p
-                      className={`text-xs mt-1 ${
-                        message.role === 'user' ? 'text-indigo-200' : 'text-gray-500'
+                      className={`text-xs mt-2 ${
+                        message.role === 'user' ? 'text-[#05070f]/70' : 'text-night-muted'
                       }`}
                     >
                       {formatTime(message.timestamp)}
@@ -154,11 +154,11 @@ const FloatingChatbot = () => {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-gray-200 rounded-lg px-3 py-2">
-                    <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                  <div className="bg-[#1b2033] border border-night rounded-2xl px-4 py-3 shadow-card">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 bg-night-muted rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-night-muted rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-night-muted rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -169,14 +169,14 @@ const FloatingChatbot = () => {
 
           {/* 빠른 질문 */}
           {messages.length <= 1 && (
-            <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-              <p className="text-xs text-gray-600 mb-2">💡 빠른 질문:</p>
-              <div className="flex flex-wrap gap-1">
+            <div className="px-5 py-3 bg-surface border-t border-night">
+              <p className="text-xs text-night-muted mb-2 font-medium">💡 빠른 질문:</p>
+              <div className="flex flex-wrap gap-2">
                 {quickQuestions.map((question, index) => (
                   <button
                     key={index}
                     onClick={() => handleQuickQuestion(question)}
-                    className="text-xs bg-white hover:bg-indigo-50 border border-gray-300 hover:border-indigo-300 text-gray-700 hover:text-indigo-700 px-2 py-1 rounded-full transition-colors"
+                    className="text-xs bg-[#1b2033] hover:bg-[#222842] border border-night hover:border-[#7c5dfa]/40 text-night-muted hover:text-night px-3 py-1.5 rounded-full transition-colors"
                   >
                     {question}
                   </button>
@@ -186,9 +186,9 @@ const FloatingChatbot = () => {
           )}
 
           {/* 입력 영역 */}
-          <div className="p-3 bg-white border-t border-gray-200 rounded-b-lg">
+          <div className="p-4 bg-surface border-t border-night rounded-b-2xl">
             {!isAuthenticated ? (
-              <div className="text-center text-sm text-gray-500">
+              <div className="text-center text-sm text-night-muted">
                 로그인이 필요합니다
               </div>
             ) : (
@@ -199,14 +199,14 @@ const FloatingChatbot = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="메시지 입력..."
-                  className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="flex-1 input text-sm"
                   disabled={loading}
                   maxLength={500}
                 />
                 <button
                   onClick={handleSend}
                   disabled={loading || !input.trim()}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn btn-primary text-sm px-4 py-2.5"
                 >
                   {loading ? '...' : '전송'}
                 </button>
@@ -216,39 +216,6 @@ const FloatingChatbot = () => {
         </div>
       )}
 
-      {/* 애니메이션 스타일 */}
-      <style>{`
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
-        }
-        .animate-bounce {
-          animation: bounce 1s infinite;
-        }
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-5px);
-          }
-        }
-        .delay-100 {
-          animation-delay: 0.1s;
-        }
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-      `}</style>
     </>
   );
 };

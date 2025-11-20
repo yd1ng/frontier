@@ -151,30 +151,26 @@ const RecruitForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-night">
       <div className="mb-4">
         <Link
           to={isEdit ? `/recruits/${id}` : '/recruits'}
-          className="text-indigo-600 hover:text-indigo-800"
+          className="text-night-muted hover:text-night"
         >
           ← 뒤로가기
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <div className="card bg-surface-2 border border-night p-8 shadow-card">
+        <h1 className="text-3xl font-semibold text-night-heading mb-6">
           {isEdit ? '모집글 수정' : '모집글 작성'}
         </h1>
 
-        {error && (
-          <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+        {error && <div className="alert alert-error mb-4">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               카테고리
             </label>
             <select
@@ -182,7 +178,7 @@ const RecruitForm = () => {
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value as any })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input bg-[#0f1626]"
               disabled={isEdit}
             >
               <option value="ctf">CTF</option>
@@ -193,7 +189,7 @@ const RecruitForm = () => {
 
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-night mb-2">
                 모집 상태
               </label>
               <select
@@ -201,7 +197,7 @@ const RecruitForm = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="input bg-[#0f1626]"
               >
                 <option value="recruiting">모집중</option>
                 <option value="closed">마감</option>
@@ -210,7 +206,7 @@ const RecruitForm = () => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               제목
             </label>
             <input
@@ -220,13 +216,13 @@ const RecruitForm = () => {
                 setFormData({ ...formData, title: e.target.value })
               }
               placeholder="제목을 입력하세요"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input"
               maxLength={200}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               내용 (마크다운 지원)
             </label>
             <textarea
@@ -234,18 +230,20 @@ const RecruitForm = () => {
               onChange={(e) =>
                 setFormData({ ...formData, content: e.target.value })
               }
-              placeholder="내용을 입력하세요&#10;&#10;💡 마크다운 문법 사용 가능:&#10;# 제목&#10;**굵게** *기울임*&#10;- 목록&#10;```코드```&#10;[링크](URL)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder={
+                '내용을 입력하세요\n\n💡 마크다운 문법 사용 가능:\n# 제목\n**굵게** *기울임*\n- 목록\n```코드```\n[링크](URL)'
+              }
+              className="input min-h-[320px] font-mono text-sm"
               rows={15}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-night-muted">
               💡 마크다운 문법을 사용할 수 있습니다: # 제목, **굵게**, *기울임*, - 목록, [링크](URL), ```코드블록```
             </p>
           </div>
 
           {/* 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               이미지 (최대 5개, 각 5MB 이하)
             </label>
             <input
@@ -254,10 +252,10 @@ const RecruitForm = () => {
               multiple
               onChange={handleImageUpload}
               disabled={uploading || (formData.images?.length || 0) >= 5}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
+              className="block w-full text-sm text-night-muted file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#1f2843] file:text-night hover:file:bg-[#2a3352] disabled:opacity-50"
             />
             {uploading && (
-              <p className="text-sm text-gray-500 mt-2">업로드 중...</p>
+              <p className="text-sm text-night-muted mt-2">업로드 중...</p>
             )}
 
             {formData.images && formData.images.length > 0 && (
@@ -267,12 +265,12 @@ const RecruitForm = () => {
                     <img
                       src={image}
                       alt={`preview-${index}`}
-                      className="w-full h-32 object-cover rounded-md border border-gray-300"
+                      className="w-full h-32 object-cover rounded-md border border-night"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 bg-[#ff5f7e] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <svg
                         className="w-4 h-4"
@@ -295,7 +293,7 @@ const RecruitForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               모집 인원
             </label>
             <input
@@ -305,12 +303,12 @@ const RecruitForm = () => {
                 setFormData({ ...formData, maxMembers: parseInt(e.target.value) })
               }
               min="1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               마감일 (선택사항)
             </label>
             <input
@@ -319,12 +317,12 @@ const RecruitForm = () => {
               onChange={(e) =>
                 setFormData({ ...formData, deadline: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-night mb-2">
               태그
             </label>
             <div className="flex gap-2 mb-2">
@@ -339,12 +337,12 @@ const RecruitForm = () => {
                   }
                 }}
                 placeholder="태그 입력 후 추가 버튼 클릭"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 input"
               />
               <button
                 type="button"
                 onClick={handleAddTag}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md"
+                className="btn btn-secondary"
               >
                 추가
               </button>
@@ -353,13 +351,13 @@ const RecruitForm = () => {
               {formData.tags?.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800"
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[#261c44] text-night"
                 >
                   #{tag}
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(tag)}
-                    className="ml-2 text-indigo-600 hover:text-indigo-800"
+                    className="ml-2 text-night-muted hover:text-night-heading"
                   >
                     ×
                   </button>
@@ -371,14 +369,14 @@ const RecruitForm = () => {
           <div className="flex justify-end space-x-4">
             <Link
               to={isEdit ? `/recruits/${id}` : '/recruits'}
-              className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="btn btn-secondary"
             >
               취소
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary"
             >
               {loading ? '처리 중...' : isEdit ? '수정하기' : '작성하기'}
             </button>
