@@ -46,20 +46,7 @@ router.post(
       const { seatNumber } = req.params;
       const { hours } = req.body;
 
-      // 좌석 찾기
-      const seat = await Seat.findOne({ seatNumber });
-      if (!seat) {
-        res.status(404).json({ error: 'Seat not found' });
-        return;
-      }
-
-      // 좌석이 이미 사용 중인지 확인
-      if (!seat.isAvailable) {
-        res.status(400).json({ error: 'Seat is already occupied' });
-        return;
-      }
-
-      // 사용자가 이미 다른 좌석을 예약했는지 확인
+      // 사용자가 이미 다른 좌석을 예약했는지 먼저 확인
       const existingReservation = await Seat.findOne({
         currentUser: req.userId,
         isAvailable: false,
@@ -73,16 +60,63 @@ router.post(
         return;
       }
 
-      // 좌석 예약
+      // 좌석 예약 시간 계산
       const reservedUntil = new Date();
       reservedUntil.setHours(reservedUntil.getHours() + hours);
 
-      seat.isAvailable = false;
-      seat.currentUser = req.userId as any;
-      seat.reservedUntil = reservedUntil;
+      // Atomic operation: 좌석이 available일 때만 예약 (동시성 문제 해결)
+      const seat = await Seat.findOneAndUpdate(
+        {
+          seatNumber,
+          isAvailable: true, // 반드시 available일 때만
+        },
+        {
+          $set: {
+            isAvailable: false,
+            currentUser: req.userId,
+            reservedUntil: reservedUntil,
+          },
+        },
+        {
+          new: true, // 업데이트된 문서 반환
+        }
+      ).populate('currentUser', 'username');
 
-      await seat.save();
-      await seat.populate('currentUser', 'username');
+      // 좌석이 없거나 이미 예약된 경우
+      if (!seat) {
+        // 좌석이 존재하는지 확인
+        const seatExists = await Seat.findOne({ seatNumber });
+        if (!seatExists) {
+          res.status(404).json({ error: 'Seat not found' });
+        } else {
+          res.status(400).json({ error: 'Seat is already occupied' });
+        }
+        return;
+      }
+
+      // 예약 성공 후, 동시에 여러 좌석을 예약한 경우를 체크
+      const allUserReservations = await Seat.countDocuments({
+        currentUser: req.userId,
+        isAvailable: false,
+      });
+
+      if (allUserReservations > 1) {
+        // 방금 예약한 좌석을 롤백
+        await Seat.findByIdAndUpdate(seat._id, {
+          $set: {
+            isAvailable: true,
+          },
+          $unset: {
+            currentUser: '',
+            reservedUntil: '',
+          },
+        });
+
+        res.status(400).json({
+          error: 'You already have a seat reservation',
+        });
+        return;
+      }
 
       res.json({
         message: 'Seat reserved successfully',
@@ -103,27 +137,43 @@ router.post(
     try {
       const { seatNumber } = req.params;
 
-      const seat = await Seat.findOne({ seatNumber });
+      // Atomic operation: 본인이 예약한 좌석만 반납 가능
+      const query: any = {
+        seatNumber,
+        isAvailable: false,
+      };
+
+      // 관리자가 아니면 본인의 예약만 반납 가능
+      if (req.userRole !== 'admin') {
+        query.currentUser = req.userId;
+      }
+
+      const seat = await Seat.findOneAndUpdate(
+        query,
+        {
+          $set: {
+            isAvailable: true,
+          },
+          $unset: {
+            currentUser: '',
+            reservedUntil: '',
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
       if (!seat) {
-        res.status(404).json({ error: 'Seat not found' });
+        // 좌석이 존재하는지 확인
+        const seatExists = await Seat.findOne({ seatNumber });
+        if (!seatExists) {
+          res.status(404).json({ error: 'Seat not found' });
+        } else {
+          res.status(403).json({ error: 'Not authorized to release this seat or seat is not occupied' });
+        }
         return;
       }
-
-      // 현재 사용자가 해당 좌석을 예약했는지 확인
-      if (
-        seat.currentUser?.toString() !== req.userId &&
-        req.userRole !== 'admin'
-      ) {
-        res.status(403).json({ error: 'Not authorized to release this seat' });
-        return;
-      }
-
-      // 좌석 반납
-      seat.isAvailable = true;
-      seat.currentUser = undefined;
-      seat.reservedUntil = undefined;
-
-      await seat.save();
 
       res.json({
         message: 'Seat released successfully',
@@ -241,4 +291,5 @@ router.post(
 );
 
 export default router;
+
 

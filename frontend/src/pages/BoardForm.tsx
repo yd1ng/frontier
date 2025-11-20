@@ -106,7 +106,6 @@ const BoardForm = () => {
                 setFormData({
                   ...formData,
                   category: e.target.value as any,
-                  isAnonymous: e.target.value === 'anonymous',
                 })
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -151,7 +150,7 @@ const BoardForm = () => {
             />
           </div>
 
-          {formData.category !== 'notice' && formData.category !== 'anonymous' && (
+          {formData.category !== 'notice' && (
             <div>
               <label className="flex items-center">
                 <input

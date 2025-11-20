@@ -55,3 +55,4 @@ const SeatSchema = new Schema<ISeat>(
 
 export default mongoose.model<ISeat>('Seat', SeatSchema);
 
+

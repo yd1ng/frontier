@@ -27,11 +27,14 @@ router.get('/', async (req: AuthRequest, res: Response): Promise<void> => {
       .skip(skip)
       .limit(limitNum);
 
-    // 익명 게시글의 경우 작성자 정보 숨김
+    // 익명 게시글의 경우 작성자 username만 '익명'으로 변경 (_id는 유지)
     const boardsWithAnonymous = boards.map((board) => {
       const boardObj = board.toObject();
-      if (board.isAnonymous) {
-        boardObj.author = { username: '익명' };
+      if (board.isAnonymous && boardObj.author) {
+        boardObj.author = {
+          ...boardObj.author,
+          username: '익명'
+        };
       }
       return boardObj;
     });
@@ -69,15 +72,24 @@ router.get('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
 
     const boardObj = board.toObject();
     
-    // 익명 게시글 처리
-    if (board.isAnonymous) {
-      boardObj.author = { username: '익명' };
+    // 익명 게시글 처리 - _id는 유지하되 username만 변경
+    if (board.isAnonymous && boardObj.author) {
+      boardObj.author = {
+        ...boardObj.author,
+        username: '익명'
+      };
     }
 
-    // 익명 댓글 처리
+    // 익명 댓글 처리 - 각 댓글마다 독립적인 author 객체 생성
     boardObj.comments = boardObj.comments.map((comment: any) => {
-      if (comment.isAnonymous) {
-        comment.author = { username: '익명' };
+      if (comment.isAnonymous && comment.author) {
+        return {
+          ...comment,
+          author: {
+            ...comment.author,
+            username: '익명'
+          }
+        };
       }
       return comment;
     });
@@ -125,15 +137,18 @@ router.post(
         content,
         category,
         author: req.userId,
-        isAnonymous: category === 'anonymous' ? true : isAnonymous || false,
+        isAnonymous: (isAnonymous === true),
       });
 
       await board.save();
       await board.populate('author', 'username');
 
       const boardObj = board.toObject();
-      if (board.isAnonymous) {
-        boardObj.author = { username: '익명' };
+      if (board.isAnonymous && boardObj.author) {
+        boardObj.author = {
+          ...boardObj.author,
+          username: '익명'
+        };
       }
 
       res.status(201).json({
@@ -302,7 +317,7 @@ router.post(
       board.comments.push({
         author: req.userId as any,
         content,
-        isAnonymous: board.category === 'anonymous' ? true : isAnonymous || false,
+        isAnonymous: (isAnonymous === true),
         createdAt: new Date(),
       } as any);
 
@@ -312,8 +327,11 @@ router.post(
       const lastComment = board.comments[board.comments.length - 1];
       const commentObj = lastComment.toObject();
       
-      if ((lastComment as any).isAnonymous) {
-        commentObj.author = { username: '익명' };
+      if ((lastComment as any).isAnonymous && commentObj.author) {
+        commentObj.author = {
+          ...commentObj.author,
+          username: '익명'
+        };
       }
 
       res.status(201).json({
