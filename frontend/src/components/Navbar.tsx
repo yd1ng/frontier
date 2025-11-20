@@ -45,6 +45,14 @@ const Navbar = () => {
               >
                 좌석 예약
               </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/chats"
+                  className="nav-link"
+                >
+                  채팅
+                </Link>
+              )}
             </div>
           </div>
 

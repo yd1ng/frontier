@@ -35,6 +35,7 @@ const RecruitDetail = () => {
     }
   };
 
+
   const handleLike = async () => {
     if (!isAuthenticated) {
       alert('로그인이 필요합니다.');
@@ -126,6 +127,63 @@ const RecruitDetail = () => {
     setEditingMembers(false);
   };
 
+  // 팀 참가 기능
+  const handleJoinTeam = async () => {
+    if (!isAuthenticated) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      await recruitService.joinTeam(id!);
+      alert('참가 신청이 완료되었습니다.');
+      loadRecruit();
+    } catch (error: any) {
+      alert(error.response?.data?.error || '참가 신청에 실패했습니다.');
+    }
+  };
+
+  const handleCancelJoin = async () => {
+    try {
+      await recruitService.cancelJoin(id!);
+      alert('참가 신청이 취소되었습니다.');
+      loadRecruit();
+    } catch (error) {
+      console.error('Failed to cancel join:', error);
+      alert('참가 취소에 실패했습니다.');
+    }
+  };
+
+  const handleApproveMember = async (userId: string, approve: boolean) => {
+    try {
+      await recruitService.approveMember(id!, userId, approve);
+      if (approve) {
+        alert('팀원이 승인되었습니다. 이제 채팅방에 참여할 수 있습니다.');
+      } else {
+        alert('참가가 거부되었습니다.');
+      }
+      loadRecruit();
+    } catch (error: any) {
+      alert(error.response?.data?.error || '처리에 실패했습니다.');
+    }
+  };
+
+  const handleRemoveMember = async (userId: string) => {
+    if (!window.confirm('정말 퇴출하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      await recruitService.removeMember(id!, userId);
+      alert('팀원이 퇴출되었습니다.');
+      loadRecruit();
+    } catch (error) {
+      console.error('Failed to remove member:', error);
+      alert('퇴출에 실패했습니다.');
+    }
+  };
+
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('ko-KR');
   };
@@ -141,6 +199,13 @@ const RecruitDetail = () => {
 
   const isAuthor = recruit && user && recruit.author._id === user.id;
   const isAdmin = user?.role === 'admin';
+  const isTeamMember = recruit && user && (
+    recruit.members?.some(m => m._id === user.id) || 
+    recruit.author._id === user.id
+  );
+  const isPendingMember = recruit && user && 
+    recruit.pendingMembers?.some(m => m._id === user.id);
+  const hasJoined = isTeamMember || isPendingMember;
 
   if (loading) {
     return (
@@ -322,6 +387,102 @@ const RecruitDetail = () => {
             </div>
           )}
         </div>
+
+        {/* 팀 참가 섹션 */}
+        {recruit.status === 'recruiting' && (
+          <div className="px-6 py-4 border-t border-night bg-surface">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-night-heading">팀원</h3>
+              {isTeamMember && (
+                <button
+                  onClick={() => {
+                    navigate(`/chats/${id}`);
+                  }}
+                  className="btn btn-primary text-sm px-4 py-2"
+                >
+                  채팅하기
+                </button>
+              )}
+            </div>
+
+            {/* 팀원 목록 */}
+            {recruit.members && recruit.members.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm text-night-muted mb-2">승인된 팀원:</p>
+                <div className="flex flex-wrap gap-2">
+                  {recruit.members.map((member) => (
+                    <div
+                      key={member._id}
+                      className="flex items-center space-x-2 px-3 py-1 bg-surface-2 rounded-lg border border-night"
+                    >
+                      <span className="text-sm text-night-heading">{member.username}</span>
+                      {isAuthor && member._id !== user?.id && (
+                        <button
+                          onClick={() => handleRemoveMember(member._id)}
+                          className="text-xs text-red-600 hover:text-red-800"
+                        >
+                          퇴출
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 참가 신청 대기 목록 (작성자만) */}
+            {isAuthor && recruit.pendingMembers && recruit.pendingMembers.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm text-night-muted mb-2">참가 신청 대기:</p>
+                <div className="space-y-2">
+                  {recruit.pendingMembers.map((pending) => (
+                    <div
+                      key={pending._id}
+                      className="flex items-center justify-between px-3 py-2 bg-surface-2 rounded-lg border border-night"
+                    >
+                      <span className="text-sm text-night-heading">{pending.username}</span>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleApproveMember(pending._id, true)}
+                          className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                        >
+                          승인
+                        </button>
+                        <button
+                          onClick={() => handleApproveMember(pending._id, false)}
+                          className="text-xs bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        >
+                          거부
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 참가 버튼 */}
+            {isAuthenticated && !hasJoined && (
+              <button
+                onClick={handleJoinTeam}
+                className="btn btn-primary w-full"
+              >
+                팀 참가하기
+              </button>
+            )}
+
+            {/* 참가 신청 취소 버튼 */}
+            {isAuthenticated && isPendingMember && (
+              <button
+                onClick={handleCancelJoin}
+                className="btn btn-secondary w-full"
+              >
+                참가 신청 취소
+              </button>
+            )}
+          </div>
+        )}
+
 
         {/* 좋아요 버튼 */}
         <div className="px-6 py-4 border-t border-night bg-surface">

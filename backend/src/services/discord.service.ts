@@ -27,11 +27,25 @@ class DiscordService {
         ],
       });
 
-      this.client.once('ready', () => {
+      this.client.once('ready', async () => {
         console.log('✅ Discord Bot connected successfully');
         this.isReady = true;
         this.loadChannels();
         this.setupMessageListener();
+        
+        // 서버 시작 시 자동 동기화
+        setTimeout(async () => {
+          try {
+            console.log('🔄 Starting initial Discord sync...');
+            await this.syncMessages();
+            console.log('✅ Initial Discord sync completed');
+          } catch (error) {
+            console.error('❌ Initial Discord sync failed:', error);
+          }
+        }, 5000); // 5초 후 동기화 (서버 완전 시작 대기)
+        
+        // 자동 동기화 스케줄러 시작 (1시간마다)
+        this.startAutoSync(60);
       });
 
       this.client.on('error', (error) => {

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { authService, User } from '../services/auth.service';
+import { socketService } from '../services/socket.service';
 
 interface AuthState {
   user: User | null;
@@ -21,6 +22,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const data = await authService.login({ email, password });
       set({ user: data.user, isAuthenticated: true, isLoading: false });
+      
+      // Socket.io 연결
+      const token = authService.getToken();
+      if (token) {
+        socketService.connect(token);
+      }
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -40,6 +47,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     authService.logout();
+    socketService.disconnect();
     set({ user: null, isAuthenticated: false });
   },
 
@@ -47,6 +55,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     const user = authService.getStoredUser();
     const token = authService.getToken();
     set({ user, isAuthenticated: !!token });
+    
+    // 토큰이 있으면 Socket.io 연결
+    if (token && !socketService.isConnected()) {
+      socketService.connect(token);
+    }
   },
 }));
 

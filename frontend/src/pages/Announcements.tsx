@@ -67,7 +67,7 @@ const Announcements = () => {
     >
       {/* 포스트 제목 */}
       {message.threadName && (
-        <h2 className="text-2xl font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
+        <h2 className="text-2xl font-bold text-night-heading mb-4 pb-3 border-b border-night">
           {message.threadName}
         </h2>
       )}
@@ -219,7 +219,7 @@ const Announcements = () => {
                   동기화 중...
                 </>
               ) : (
-                <>🔄 동기화</>
+                <>동기화</>
               )}
             </button>
           )}

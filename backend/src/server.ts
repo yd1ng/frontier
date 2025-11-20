@@ -1,10 +1,15 @@
 import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
+import Recruit from './models/Recruit';
 import authRoutes from './routes/auth';
 import boardRoutes from './routes/boards';
 import recruitRoutes from './routes/recruits';
@@ -82,6 +87,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // MongoDB 쿼리 인젝션 방지
 app.use(mongoSanitize());
 
+// XSS 방지
+app.use(xss());
+
 // 입력 크기 제한
 app.use(limitContentSize);
 
@@ -136,6 +144,102 @@ app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ error: 'Not Found' });
 });
 
+// HTTP 서버 생성
+const httpServer = createServer(app);
+
+// Socket.io 서버 설정
+const io = new Server(httpServer, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
+});
+
+// Socket.io 인증 미들웨어
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) {
+    return next(new Error('Authentication error'));
+  }
+
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return next(new Error('Server configuration error'));
+    }
+
+    const decoded = jwt.verify(token, secret) as { userId: string; role: string };
+    socket.data.userId = decoded.userId;
+    socket.data.role = decoded.role;
+    next();
+  } catch (error) {
+    next(new Error('Authentication error'));
+  }
+});
+
+// Socket.io 연결 처리
+io.on('connection', (socket) => {
+  console.log(`✅ Socket connected: ${socket.id} (User: ${socket.data.userId})`);
+
+  // 팀 채팅방 참가 (권한 검증 포함)
+  socket.on('join-team-chat', async (recruitId: string) => {
+    try {
+      // recruitId 검증 (문자열, 길이 제한)
+      if (typeof recruitId !== 'string' || recruitId.length > 50 || !/^[a-f0-9]{24}$/i.test(recruitId)) {
+        socket.emit('error', { message: 'Invalid recruit ID' });
+        return;
+      }
+
+      // 팀원 권한 확인
+      const recruit = await Recruit.findById(recruitId)
+        .populate('members', '_id')
+        .populate('author', '_id');
+
+      if (!recruit) {
+        socket.emit('error', { message: 'Recruit not found' });
+        return;
+      }
+
+      const userIdStr = socket.data.userId;
+      const isAuthor = recruit.author.toString() === userIdStr;
+      // populate된 경우와 아닌 경우 모두 처리
+      const isMember = recruit.members.some((member: any) => {
+        const memberId = member._id ? member._id.toString() : member.toString();
+        return memberId === userIdStr;
+      });
+
+      if (!isAuthor && !isMember) {
+        socket.emit('error', { message: 'Not authorized to join team chat' });
+        return;
+      }
+
+      socket.join(`team-${recruitId}`);
+      console.log(`User ${socket.data.userId} joined team-${recruitId}`);
+    } catch (error) {
+      console.error('Join team chat error:', error);
+      socket.emit('error', { message: 'Failed to join team chat' });
+    }
+  });
+
+  // 팀 채팅방 나가기
+  socket.on('leave-team-chat', (recruitId: string) => {
+    // recruitId 검증
+    if (typeof recruitId !== 'string' || recruitId.length > 50) {
+      return;
+    }
+    socket.leave(`team-${recruitId}`);
+    console.log(`User ${socket.data.userId} left team-${recruitId}`);
+  });
+
+  // 연결 해제
+  socket.on('disconnect', () => {
+    console.log(`❌ Socket disconnected: ${socket.id}`);
+  });
+});
+
+// Socket.io 인스턴스를 전역으로 export
+export { io };
+
 // MongoDB connection
 mongoose
   .connect(MONGODB_URI)
@@ -150,20 +254,18 @@ mongoose
     // 좌석 예약 자동 정리 스케줄러 시작 (5분마다)
     startCleanupScheduler(5);
     
-    // Discord 자동 동기화 스케줄러 시작 (1시간마다)
-    setTimeout(() => {
-      if (discordService.isConnected()) {
-        discordService.startAutoSync(60);
-      }
-    }, 5000); // Discord Bot 연결 후 5초 대기
-    
-    app.listen(PORT, () => {
+    // 서버 시작
+    httpServer.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
+      console.log(`🔌 Socket.io server enabled`);
       
       if (NODE_ENV === 'development') {
         console.log(`📝 API Documentation: http://localhost:${PORT}/api`);
       }
     });
+    
+    // Discord 서비스는 import 시 자동으로 초기화됨 (생성자에서)
+    // 에러가 발생해도 서버는 정상 작동
   })
   .catch((error) => {
     console.error('❌ MongoDB connection error:', error.message);

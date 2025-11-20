@@ -12,14 +12,32 @@ export interface Recruit {
   status: 'recruiting' | 'closed';
   maxMembers: number;
   currentMembers: number;
+  members: TeamMember[];
+  pendingMembers: TeamMember[];
   tags: string[];
   images?: string[];
   deadline?: string;
   views: number;
   likes: string[];
   comments: RecruitComment[];
+  teamChat?: TeamChatMessage[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TeamMember {
+  _id: string;
+  username: string;
+}
+
+export interface TeamChatMessage {
+  _id: string;
+  author: {
+    _id: string;
+    username: string;
+  };
+  content: string;
+  createdAt: string;
 }
 
 export interface RecruitComment {
@@ -90,5 +108,76 @@ export const recruitService = {
     const response = await api.delete(`/recruits/${recruitId}/comments/${commentId}`);
     return response.data;
   },
+
+  // 팀 참가 기능
+  async joinTeam(recruitId: string) {
+    const response = await api.post(`/recruits/${recruitId}/join`);
+    return response.data;
+  },
+
+  async cancelJoin(recruitId: string) {
+    const response = await api.delete(`/recruits/${recruitId}/join`);
+    return response.data;
+  },
+
+  async approveMember(recruitId: string, userId: string, approve: boolean) {
+    const response = await api.post(`/recruits/${recruitId}/approve/${userId}`, {
+      approve,
+    });
+    return response.data;
+  },
+
+  async removeMember(recruitId: string, userId: string) {
+    const response = await api.delete(`/recruits/${recruitId}/members/${userId}`);
+    return response.data;
+  },
+
+  // 팀 채팅 기능
+  async getTeamChat(recruitId: string) {
+    const response = await api.get(`/recruits/${recruitId}/chat`);
+    return response.data;
+  },
+
+  async sendChatMessage(recruitId: string, content: string) {
+    const response = await api.post(`/recruits/${recruitId}/chat`, {
+      content,
+    });
+    return response.data.chatMessage;
+  },
+
+  async deleteChatMessage(recruitId: string, messageId: string) {
+    const response = await api.delete(`/recruits/${recruitId}/chat/${messageId}`);
+    return response.data;
+  },
+
+  // 내 채팅방 목록 조회
+  async getMyChatRooms() {
+    const response = await api.get('/recruits/my-chats');
+    return response.data;
+  },
 };
+
+export interface ChatRoom {
+  _id: string;
+  title: string;
+  category: 'ctf' | 'project' | 'study';
+  status: 'recruiting' | 'closed';
+  author: {
+    _id: string;
+    username: string;
+  };
+  members: TeamMember[];
+  lastMessage: {
+    _id: string;
+    content: string;
+    createdAt: string;
+    author: {
+      _id: string;
+      username: string;
+    };
+  } | null;
+  unreadCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
 

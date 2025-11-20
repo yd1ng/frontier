@@ -8,12 +8,15 @@ export interface IRecruit extends Document {
   status: 'recruiting' | 'closed';
   maxMembers: number;
   currentMembers: number;
+  members: mongoose.Types.ObjectId[]; // 팀원 목록
+  pendingMembers: mongoose.Types.ObjectId[]; // 참가 신청 대기 목록
   tags: string[];
   images: string[]; // 이미지 파일 경로 배열
   deadline?: Date;
   views: number;
   likes: mongoose.Types.ObjectId[];
   comments: IRecruitComment[];
+  teamChat: ITeamChatMessage[]; // 팀 채팅 메시지
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +28,32 @@ export interface IRecruitComment {
   createdAt: Date;
 }
 
+export interface ITeamChatMessage {
+  _id: mongoose.Types.ObjectId;
+  author: mongoose.Types.ObjectId;
+  content: string;
+  createdAt: Date;
+}
+
 const RecruitCommentSchema = new Schema<IRecruitComment>(
+  {
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const TeamChatMessageSchema = new Schema<ITeamChatMessage>(
   {
     author: {
       type: Schema.Types.ObjectId,
@@ -80,6 +108,18 @@ const RecruitSchema = new Schema<IRecruit>(
       default: 1,
       min: 1,
     },
+    members: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    pendingMembers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     tags: [
       {
         type: String,
@@ -104,6 +144,7 @@ const RecruitSchema = new Schema<IRecruit>(
       },
     ],
     comments: [RecruitCommentSchema],
+    teamChat: [TeamChatMessageSchema],
   },
   {
     timestamps: true,

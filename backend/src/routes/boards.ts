@@ -3,6 +3,7 @@ import { body, validationResult } from 'express-validator';
 import Board from '../models/Board';
 import { authenticateToken, isAdmin, AuthRequest } from '../middleware/auth';
 import { createPostLimiter, commentLimiter } from '../middleware/security';
+import { validateObjectId, validateObjectIds } from '../middleware/validation';
 
 const router = express.Router();
 

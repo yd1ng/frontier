@@ -104,6 +104,11 @@ const RecruitForm = () => {
       return;
     }
 
+    if (!formData.deadline || !formData.deadline.trim()) {
+      setError('마감일을 입력해주세요.');
+      return;
+    }
+
     try {
       setLoading(true);
       const submitData: any = {
@@ -112,7 +117,7 @@ const RecruitForm = () => {
         category: formData.category,
         maxMembers: formData.maxMembers,
         tags: formData.tags,
-        deadline: formData.deadline || undefined,
+        deadline: formData.deadline,
       };
 
       if (isEdit) {
@@ -309,7 +314,7 @@ const RecruitForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-night mb-2">
-              마감일 (선택사항)
+              마감일 <span className="text-red-400">*</span>
             </label>
             <input
               type="datetime-local"
@@ -318,6 +323,7 @@ const RecruitForm = () => {
                 setFormData({ ...formData, deadline: e.target.value })
               }
               className="input"
+              required
             />
           </div>
 

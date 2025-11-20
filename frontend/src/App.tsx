@@ -15,6 +15,8 @@ import Seats from './pages/Seats';
 import AdminPanel from './pages/AdminPanel';
 import Chatbot from './pages/Chatbot';
 import Announcements from './pages/Announcements';
+import ChatList from './pages/ChatList';
+import TeamChat from './pages/TeamChat';
 
 function App() {
   return (
@@ -75,6 +77,24 @@ function App() {
 
           {/* 공지사항 & 미션 */}
           <Route path="/announcements" element={<Announcements />} />
+
+          {/* 채팅 */}
+          <Route
+            path="/chats"
+            element={
+              <ProtectedRoute>
+                <ChatList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chats/:recruitId"
+            element={
+              <ProtectedRoute>
+                <TeamChat />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 관리자 패널 */}
           <Route

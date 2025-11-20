@@ -16,7 +16,7 @@ const Home = () => {
         <div className="text-center space-y-6 animate-fade-in">
           <img src={hspaceLogo} alt="HSPACE" className="h-12 w-auto mx-auto opacity-90" />
           <p className="uppercase tracking-[0.4em] text-night-muted text-sm">
-            Hspace X Anonymous
+            Hspace X Frontier Team 2
           </p>
           <h1 className="text-4xl md:text-6xl font-bold text-night-heading leading-tight night-gradient-text">
             Hspace에 오신 것을 환영합니다
