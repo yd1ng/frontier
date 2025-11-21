@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { authService, User } from '../services/auth.service';
 import { socketService } from '../services/socket.service';
+import { useNotificationStore } from './notificationStore';
 
 interface AuthState {
   user: User | null;
@@ -26,7 +27,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       // Socket.io 연결
       const token = authService.getToken();
       if (token) {
-        socketService.connect(token);
+        socketService.connect(token, () => {
+          // Socket 연결 완료 후 알림 리스너 설정
+          setupNotificationListener();
+        });
       }
     } catch (error) {
       set({ isLoading: false });
@@ -57,9 +61,56 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user, isAuthenticated: !!token });
     
     // 토큰이 있으면 Socket.io 연결
-    if (token && !socketService.isConnected()) {
-      socketService.connect(token);
+    if (token) {
+      socketService.connect(token, () => {
+        // Socket 연결 완료 후 알림 리스너 설정
+        setupNotificationListener();
+      });
     }
   },
 }));
+
+// 알림 리스너 설정 함수
+let applicationListener: ((notification: any) => void) | null = null;
+let approvalListener: ((notification: any) => void) | null = null;
+
+function setupNotificationListener() {
+  console.log('🔔 Setting up notification listeners...');
+  console.log('Socket connected:', socketService.isConnected());
+  
+  // 기존 리스너 제거 (중복 방지)
+  if (applicationListener) {
+    socketService.offRecruitApplication(applicationListener);
+  }
+  if (approvalListener) {
+    socketService.offRecruitApproval(approvalListener);
+  }
+
+  // 팀 참가 신청 알림 리스너 생성
+  applicationListener = (notification: any) => {
+    console.log('📨 [Frontend] Received recruit application notification:', notification);
+    try {
+      useNotificationStore.getState().addNotification(notification);
+      console.log('✅ Notification added to store');
+    } catch (error) {
+      console.error('❌ Error adding notification:', error);
+    }
+  };
+
+  // 승인/거부 알림 리스너 생성
+  approvalListener = (notification: any) => {
+    console.log('📨 [Frontend] Received recruit approval notification:', notification);
+    try {
+      useNotificationStore.getState().addNotification(notification);
+      console.log('✅ Notification added to store');
+    } catch (error) {
+      console.error('❌ Error adding notification:', error);
+    }
+  };
+
+  // 리스너 등록
+  socketService.onRecruitApplication(applicationListener);
+  socketService.onRecruitApproval(approvalListener);
+  console.log('✅ Notification listeners registered');
+}
 

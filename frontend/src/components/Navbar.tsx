@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import NotificationBell from './NotificationBell';
 import hspaceLogo from '../assets/hspace-logo.svg';
 
 const Navbar = () => {
@@ -59,6 +60,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-3">
             {isAuthenticated ? (
               <>
+                <NotificationBell />
                 {user?.role === 'admin' && (
                   <Link
                     to="/admin"

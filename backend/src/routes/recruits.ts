@@ -1,6 +1,7 @@
 import express, { Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import Recruit from '../models/Recruit';
+import User from '../models/User';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { createPostLimiter, commentLimiter } from '../middleware/security';
 import { validateObjectId, validateObjectIds } from '../middleware/validation';
@@ -478,6 +479,24 @@ router.post(
       recruit.pendingMembers.push(userIdStr as any);
       await recruit.save();
 
+      // 신청자 정보 가져오기
+      const applicant = await User.findById(userIdStr).select('username');
+
+      // 팀장에게 실시간 알림 전송
+      const authorId = recruit.author.toString();
+      const applicationNotification = {
+        type: 'recruit-application',
+        recruitId: recruit._id.toString(),
+        recruitTitle: recruit.title,
+        applicantId: userIdStr,
+        applicantUsername: applicant?.username || '알 수 없음',
+        message: `${applicant?.username}님이 팀 참가를 신청했습니다.`,
+        createdAt: new Date(),
+      };
+      
+      console.log(`📤 Sending application notification to user-${authorId}:`, applicationNotification);
+      io.to(`user-${authorId}`).emit('recruit-application', applicationNotification);
+
       res.json({ message: '참가 신청이 완료되었습니다' });
     } catch (error) {
       console.error('Join team error:', error);
@@ -545,6 +564,10 @@ router.post(
         id => id.toString() !== userId
       );
 
+      // 신청자 정보 가져오기
+      const applicant = await User.findById(userId).select('username');
+      const recruitTitle = recruit.title;
+
       if (approve) {
         // 팀원이 가득 찬 경우
         if (recruit.currentMembers >= recruit.maxMembers) {
@@ -561,6 +584,20 @@ router.post(
       await recruit.save();
       await recruit.populate('members', 'username');
       await recruit.populate('pendingMembers', 'username');
+
+      // 신청자에게 승인/거부 알림 전송
+      const notificationData = {
+        type: approve ? 'recruit-approval' : 'recruit-rejection',
+        recruitId: recruit._id.toString(),
+        recruitTitle: recruitTitle,
+        message: approve 
+          ? `"${recruitTitle}" 팀 참가가 승인되었습니다!` 
+          : `"${recruitTitle}" 팀 참가가 거부되었습니다.`,
+        createdAt: new Date(),
+      };
+      
+      console.log(`📤 Sending approval notification to user-${userId}:`, notificationData);
+      io.to(`user-${userId}`).emit('recruit-approval', notificationData);
 
       res.json({
         message: approve ? '팀원이 승인되었습니다' : '참가가 거부되었습니다',

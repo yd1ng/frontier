@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -17,8 +18,15 @@ import Chatbot from './pages/Chatbot';
 import Announcements from './pages/Announcements';
 import ChatList from './pages/ChatList';
 import TeamChat from './pages/TeamChat';
+import { useAuthStore } from './store/authStore';
 
 function App() {
+  const { checkAuth } = useAuthStore();
+
+  useEffect(() => {
+    // 앱 시작 시 인증 상태 확인 및 Socket.io 연결
+    checkAuth();
+  }, [checkAuth]);
   return (
     <Router>
       <div className="min-h-screen bg-night text-night font-sans">
