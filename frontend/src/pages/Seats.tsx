@@ -68,6 +68,12 @@ const Seats = () => {
       return;
     }
 
+    // 스태프룸은 관리자만 예약 가능
+    if (seat.room === 'staff' && user?.role !== 'admin') {
+      alert('STAFF ROOM은 관리자만 예약할 수 있습니다.');
+      return;
+    }
+
     // 빈 좌석 클릭 - 예약
     if (myReservation) {
       alert('이미 예약된 좌석이 있습니다. 먼저 반납해주세요.');
@@ -196,32 +202,44 @@ const Seats = () => {
   // STAFF ROOM 좌석 배치
   const renderStaffRoomSeats = () => {
     const staffSeats = seats.filter((s: Seat) => s.room === 'staff');
+    const isAdmin = user?.role === 'admin';
     
     return (
       <div className="grid grid-cols-6 gap-4">
-        {staffSeats.map((seat: Seat) => (
-          <button
-            key={seat._id}
-            onClick={() => handleSeatClick(seat)}
-            className={`p-6 rounded-2xl border-2 transition-all shadow-card ${
-              seat.isAvailable
-                ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 text-night cursor-pointer'
-                : seat.currentUser?._id === user?.id
-                ? 'night-gradient text-[#05070f] border-[#7c5dfa] cursor-pointer shadow-neon'
-                : 'bg-[#28131f] border-[#ff5f7e] cursor-not-allowed opacity-70 text-night-muted'
-            }`}
-            disabled={!seat.isAvailable && seat.currentUser?._id !== user?.id}
-          >
-            <div className="text-center">
-              <div className="font-semibold text-base">{seat.seatNumber}</div>
-              {!seat.isAvailable && (
-                <div className="text-xs mt-1">
-                  {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
-                </div>
-              )}
-            </div>
-          </button>
-        ))}
+        {staffSeats.map((seat: Seat) => {
+          const canReserve = seat.isAvailable && isAdmin;
+          const isMySeat = !seat.isAvailable && seat.currentUser?._id === user?.id;
+          
+          return (
+            <button
+              key={seat._id}
+              onClick={() => handleSeatClick(seat)}
+              className={`p-6 rounded-2xl border-2 transition-all shadow-card ${
+                canReserve
+                  ? 'bg-[#34c759]/10 border-[#34c759] hover:bg-[#34c759]/20 text-night cursor-pointer'
+                  : isMySeat
+                  ? 'night-gradient text-[#05070f] border-[#7c5dfa] cursor-pointer shadow-neon'
+                  : !seat.isAvailable
+                  ? 'bg-[#28131f] border-[#ff5f7e] cursor-not-allowed opacity-70 text-night-muted'
+                  : 'bg-gray-800/30 border-gray-600 cursor-not-allowed opacity-50 text-night-muted'
+              }`}
+              disabled={!canReserve && !isMySeat}
+              title={!isAdmin && seat.isAvailable ? '관리자만 예약 가능합니다' : ''}
+            >
+              <div className="text-center">
+                <div className="font-semibold text-base">{seat.seatNumber}</div>
+                {!seat.isAvailable && (
+                  <div className="text-xs mt-1">
+                    {seat.currentUser?._id === user?.id ? '사용중' : '예약됨'}
+                  </div>
+                )}
+                {seat.isAvailable && !isAdmin && (
+                  <div className="text-xs mt-1 text-night-muted">관리자 전용</div>
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
     );
   };

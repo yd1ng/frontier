@@ -46,6 +46,19 @@ router.post(
       const { seatNumber } = req.params;
       const { hours } = req.body;
 
+      // 좌석 정보 조회 (room 확인용)
+      const seatInfo = await Seat.findOne({ seatNumber });
+      if (!seatInfo) {
+        res.status(404).json({ error: 'Seat not found' });
+        return;
+      }
+
+      // 스태프룸은 관리자만 예약 가능
+      if (seatInfo.room === 'staff' && req.userRole !== 'admin') {
+        res.status(403).json({ error: 'STAFF ROOM은 관리자만 예약할 수 있습니다' });
+        return;
+      }
+
       // 사용자가 이미 다른 좌석을 예약했는지 먼저 확인
       const existingReservation = await Seat.findOne({
         currentUser: req.userId,
