@@ -38,7 +38,7 @@ export const registerLimiter = rateLimit({
   max: 3, // 최대 3회 시도
   message: '너무 많은 회원가입 시도가 발생했습니다. 1시간 후 다시 시도해주세요.',
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: false, 
   handler: (req: Request, res: Response) => {
     res.status(429).json({
       error: '너무 많은 회원가입 시도가 발생했습니다. 1시간 후 다시 시도해주세요.',
