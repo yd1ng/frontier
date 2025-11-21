@@ -71,6 +71,10 @@ COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 RUN mkdir -p /app/uploads && \
     chmod 755 /app/uploads
 
+# CTF 플래그 파일 복사
+COPY var/ctf/flag /var/ctf/flag
+RUN chmod 644 /var/ctf/flag
+
 # Supervisor 설정 (MongoDB, Backend, Nginx 동시 실행)
 RUN echo '[supervisord]' > /etc/supervisord.conf && \
     echo 'nodaemon=true' >> /etc/supervisord.conf && \

@@ -21,6 +21,5 @@ Dockerfile
 .dockerignore
 README.md
 *.md
-var/ctf/flag
 gpg-key.conf
 exploit_bug1.zip.pgp
