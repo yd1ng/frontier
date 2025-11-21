@@ -9,11 +9,17 @@
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start"
   },
-  "keywords": ["ctf", "community", "board"],
+  "keywords": [
+    "ctf",
+    "community",
+    "board"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "mongoose": "^8.20.1"
   }
 }
-

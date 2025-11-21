@@ -3,6 +3,7 @@ import { uploadImages } from '../middleware/upload';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import fs from 'fs';
 import path from 'path';
+import FileModel from '../models/File';
 
 const router = express.Router();
 
@@ -25,12 +26,25 @@ router.post(
         return;
       }
 
-      const files = req.files as Express.Multer.File[];
-      const imageUrls = files.map((file) => `/uploads/${file.filename}`);
+const files = req.files as Express.Multer.File[];
+      const savedFiles = [];
+
+      // [추가된 부분] DB에 파일 정보와 주인을 기록합니다.
+      for (const file of files) {
+        const newFile = new FileModel({
+          filename: file.filename,
+          originalName: file.originalname,
+          uploader: req.userId, // 주인을 기록하는 핵심 코드
+          size: file.size,
+          mimetype: file.mimetype,
+        });
+        await newFile.save();
+        savedFiles.push(`/uploads/${file.filename}`);
+      }
 
       res.json({
         message: 'Images uploaded successfully',
-        images: imageUrls,
+        images: savedFiles,
       });
     } catch (error) {
       console.error('Upload error:', error);
@@ -44,18 +58,29 @@ router.delete(
   '/:filename',
   authenticateToken,
   async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
+try {
       const { filename } = req.params;
-      const filePath = path.join(__dirname, '../../uploads', filename);
 
-      // 파일 존재 확인
-      if (!fs.existsSync(filePath)) {
+      const fileRecord = await FileModel.findOne({ filename });
+
+      if (!fileRecord) {
         res.status(404).json({ error: 'File not found' });
         return;
       }
 
-      // 파일 삭제
-      fs.unlinkSync(filePath);
+
+      if (fileRecord.uploader.toString() !== req.userId && req.userRole !== 'admin') {
+        res.status(403).json({ error: 'Permission denied: You do not own this file' });
+        return;
+      }
+
+
+      const filePath = path.join(__dirname, '../../uploads', filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+
+      await FileModel.deleteOne({ _id: fileRecord._id });
 
       res.json({ message: 'Image deleted successfully' });
     } catch (error) {
