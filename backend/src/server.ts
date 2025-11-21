@@ -247,37 +247,23 @@ io.on('connection', (socket) => {
 // Socket.io 인스턴스를 전역으로 export
 export { io };
 
-// MongoDB connection
-mongoose
-  .connect(MONGODB_URI)
-  .then(async () => {
-    console.log('✅ Connected to MongoDB');
-    console.log(`🌍 Environment: ${NODE_ENV}`);
-    console.log(`🔒 Security features enabled`);
-    
-    // 좌석 자동 초기화 (좌석이 없을 경우에만)
-    await initializeSeatsIfEmpty();
-    
-    // 좌석 예약 자동 정리 스케줄러 시작 (5분마다)
-    startCleanupScheduler(5);
-    
-    // 서버 시작
-    httpServer.listen(PORT, () => {
-      console.log(`🚀 Server is running on port ${PORT}`);
-      console.log(`🔌 Socket.io server enabled`);
-      
-      if (NODE_ENV === 'development') {
-        console.log(`📝 API Documentation: http://localhost:${PORT}/api`);
-      }
-    });
-    
-    // Discord 서비스는 import 시 자동으로 초기화됨 (생성자에서)
-    // 에러가 발생해도 서버는 정상 작동
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection error:', error.message);
-    process.exit(1);
-  });
+// CTF 목적: MongoDB 연결 없이 서버 시작
+console.log('⚠️  Running in CTF mode without MongoDB');
+console.log(`🌍 Environment: ${NODE_ENV}`);
+console.log(`🔒 Security features enabled (but vulnerable for CTF)`);
+
+// 서버 시작
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`🔌 Socket.io server enabled`);
+
+  if (NODE_ENV === 'development') {
+    console.log(`📝 API Documentation: http://localhost:${PORT}/api`);
+  }
+});
+
+// Discord 서비스는 import 시 자동으로 초기화됨 (생성자에서)
+// 에러가 발생해도 서버는 정상 작동
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

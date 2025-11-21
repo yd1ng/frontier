@@ -15,6 +15,14 @@ const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
 export const validateEnv = (): EnvConfig => {
   const missingVars: string[] = [];
 
+  // CTF 모의해킹을 위한 기본값 설정
+  if (!process.env.JWT_SECRET) {
+    process.env.JWT_SECRET = 'ctf_jwt_secret_for_testing_purposes_only';
+  }
+  if (!process.env.MONGODB_URI) {
+    process.env.MONGODB_URI = 'mongodb://localhost:27017/frontier_ctf';
+  }
+
   // 필수 환경 변수 확인
   for (const varName of requiredEnvVars) {
     if (!process.env[varName]) {
@@ -34,19 +42,6 @@ export const validateEnv = (): EnvConfig => {
   if (jwtSecret.length < 32) {
     console.warn(
       '⚠️  WARNING: JWT_SECRET should be at least 32 characters for better security!'
-    );
-  }
-
-  if (
-    jwtSecret === 'your_jwt_secret_key' ||
-    jwtSecret === 'default_secret' ||
-    jwtSecret.includes('example') ||
-    jwtSecret.includes('change_this')
-  ) {
-    throw new Error(
-      '🔒 SECURITY ERROR: Please change JWT_SECRET in .env file!\n' +
-      '   The current JWT_SECRET is a default/example value and is not secure.\n' +
-      '   Generate a secure random string: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"'
     );
   }
 
