@@ -231,6 +231,13 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.data.userId} left team-${recruitId}`);
   });
 
+  // 사용자별 알림 룸 참가 (로그인 시 자동으로 참가)
+  const userId = socket.data.userId;
+  if (userId) {
+    socket.join(`user-${userId}`);
+    console.log(`User ${userId} joined notification room: user-${userId}`);
+  }
+
   // 연결 해제
   socket.on('disconnect', () => {
     console.log(`❌ Socket disconnected: ${socket.id}`);
