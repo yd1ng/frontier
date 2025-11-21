@@ -57,7 +57,7 @@ app.use(
 // CORS 설정 강화
 const allowedOrigins = config.ALLOWED_ORIGINS
   ? config.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost'];
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost', 'http://localhost:5000'];
 
 app.use(
   cors({

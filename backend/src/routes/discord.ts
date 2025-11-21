@@ -33,7 +33,7 @@ router.get(
         return;
       }
 
-      const limit = (req.query.limit as number) || 20;
+      const limit = Number(req.query.limit) || 20;
       const messages = await discordService.getMessages('announcement', limit);
 
       res.json({
@@ -59,7 +59,7 @@ router.get(
         return;
       }
 
-      const limit = (req.query.limit as number) || 20;
+      const limit = Number(req.query.limit) || 20;
       const messages = await discordService.getMessages('mission', limit);
 
       res.json({

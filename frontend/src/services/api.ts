@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
+// Nginx를 통해 프록시되므로 상대 경로 사용
+const API_URL = (import.meta as any).env?.VITE_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_URL,

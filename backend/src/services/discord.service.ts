@@ -210,7 +210,7 @@ class DiscordService {
 
       for (const thread of threadArray) {
         // 각 스레드(포스트)의 첫 메시지(starter message)만 가져오기
-        const starterMessage = await thread.fetchStarterMessage().catch(() => null);
+        const starterMessage = await (thread as any).fetchStarterMessage().catch(() => null);
         
         if (starterMessage) {
           await this.saveMessage(starterMessage, channelConfig);

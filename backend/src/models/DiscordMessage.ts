@@ -51,11 +51,11 @@ const DiscordMessageSchema = new Schema<IDiscordMessage>(
       },
     },
     embeds: {
-      type: [Schema.Types.Mixed],
+      type: [Schema.Types.Mixed] as any,
       default: [],
     },
     attachments: {
-      type: [Schema.Types.Mixed],
+      type: [Schema.Types.Mixed] as any,
       default: [],
     },
     timestamp: {

@@ -411,7 +411,7 @@ router.delete(
         return;
       }
 
-      const comment = recruit.comments.id(req.params.commentId);
+      const comment = (recruit.comments as any).id(req.params.commentId);
       if (!comment) {
         res.status(404).json({ error: 'Comment not found' });
         return;
@@ -426,7 +426,7 @@ router.delete(
         return;
       }
 
-      recruit.comments.pull(req.params.commentId);
+      (recruit.comments as any).pull(req.params.commentId);
       await recruit.save();
 
       res.json({ message: 'Comment deleted successfully' });
@@ -799,7 +799,7 @@ router.delete(
         return;
       }
 
-      const message = recruit.teamChat.id(req.params.messageId);
+      const message = (recruit.teamChat as any).id(req.params.messageId);
       if (!message) {
         res.status(404).json({ error: 'Message not found' });
         return;
@@ -814,7 +814,7 @@ router.delete(
         return;
       }
 
-      recruit.teamChat.pull(req.params.messageId);
+      (recruit.teamChat as any).pull(req.params.messageId);
       await recruit.save();
 
       res.json({ message: 'Message deleted successfully' });

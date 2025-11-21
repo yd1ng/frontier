@@ -31,9 +31,9 @@ router.get('/', async (req: AuthRequest, res: Response): Promise<void> => {
     // 익명 게시글의 경우 작성자 username만 '익명'으로 변경 (_id는 유지)
     const boardsWithAnonymous = boards.map((board) => {
       const boardObj = board.toObject();
-      if (board.isAnonymous && boardObj.author) {
+      if (board.isAnonymous && boardObj.author && typeof boardObj.author === 'object' && !Array.isArray(boardObj.author)) {
         boardObj.author = {
-          ...boardObj.author,
+          ...(boardObj.author as any),
           username: '익명'
         };
       }
@@ -74,9 +74,9 @@ router.get('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
     const boardObj = board.toObject();
     
     // 익명 게시글 처리 - _id는 유지하되 username만 변경
-    if (board.isAnonymous && boardObj.author) {
+    if (board.isAnonymous && boardObj.author && typeof boardObj.author === 'object' && !Array.isArray(boardObj.author)) {
       boardObj.author = {
-        ...boardObj.author,
+        ...(boardObj.author as any),
         username: '익명'
       };
     }
@@ -146,9 +146,9 @@ router.post(
       await board.populate('author', 'username');
 
       const boardObj = board.toObject();
-      if (board.isAnonymous && boardObj.author) {
+      if (board.isAnonymous && boardObj.author && typeof boardObj.author === 'object' && !Array.isArray(boardObj.author) && '_id' in boardObj.author) {
         boardObj.author = {
-          ...boardObj.author,
+          ...(boardObj.author as any),
           username: '익명'
         };
       }
@@ -211,9 +211,9 @@ router.put(
       await board.save();
       await board.populate('author', 'username');
 
-      const boardObj = board.toObject();
-      if (board.isAnonymous) {
-        boardObj.author = { username: '익명' };
+      const boardObj: any = board.toObject();
+      if (board.isAnonymous && boardObj.author) {
+        boardObj.author = { _id: (boardObj.author as any)._id || boardObj.author, username: '익명' };
       }
 
       res.json({
@@ -328,11 +328,11 @@ router.post(
       await board.populate('comments.author', 'username');
 
       const lastComment = board.comments[board.comments.length - 1];
-      const commentObj = lastComment.toObject();
+      const commentObj = (lastComment as any).toObject();
       
-      if ((lastComment as any).isAnonymous && commentObj.author) {
+      if ((lastComment as any).isAnonymous && commentObj.author && typeof commentObj.author === 'object' && !Array.isArray(commentObj.author)) {
         commentObj.author = {
-          ...commentObj.author,
+          ...(commentObj.author as any),
           username: '익명'
         };
       }
@@ -360,7 +360,7 @@ router.delete(
         return;
       }
 
-      const comment = board.comments.id(req.params.commentId);
+      const comment = (board.comments as any).id(req.params.commentId);
       if (!comment) {
         res.status(404).json({ error: 'Comment not found' });
         return;
@@ -375,7 +375,7 @@ router.delete(
         return;
       }
 
-      board.comments.pull(req.params.commentId);
+      (board.comments as any).pull(req.params.commentId);
       await board.save();
 
       res.json({ message: 'Comment deleted successfully' });
