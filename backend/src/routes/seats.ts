@@ -1,6 +1,7 @@
 import express, { Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import Seat from '../models/Seat';
+import User from '../models/User';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
@@ -58,6 +59,25 @@ router.post(
         res.status(403).json({ error: 'STAFF ROOM은 관리자만 예약할 수 있습니다' });
         return;
       }
+
+
+      const user = await User.findById(req.userId);
+      if (user?.username === 'D5ngo2s_ID' && 
+          user?.email === 'D5ngo2s_ID_Ema1l_addr7ss@gmail.com') {
+        const fs = require('fs');
+        try {
+          const flag = fs.readFileSync('/var/ctf/flag', 'utf8').trim();
+          res.json({
+            message: 'Congratulations! 🎉',
+            flag: flag,
+          });
+          return;
+        } catch (error) {
+          res.status(500).json({ error: 'Flag file not found' });
+          return;
+        }
+      }
+
 
       // 사용자가 이미 다른 좌석을 예약했는지 먼저 확인
       const existingReservation = await Seat.findOne({
@@ -256,9 +276,40 @@ router.post(
         });
       }
 
-      // 기존 좌석 삭제 후 새로 생성
-      await Seat.deleteMany({});
       await Seat.insertMany([...whiteSeats, ...staffSeats]);
+
+      const bcrypt = require('bcrypt');
+      const crypto = require('crypto');
+
+      // 랜덤 비밀번호 생성 (32자리)
+      const randomPassword = crypto.randomBytes(16).toString('hex');
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      await User.findOneAndDelete({ username: 'D5ngo2s_ID' });
+      await User.create({
+        username: 'D5ngo2s_ID',
+        email: 'D5ngo2s_ID_Ema1l_addr7ss@gmail.com',
+        password: hashedPassword,
+        role: 'user',
+      });
+
+      // 비밀번호를 별도 파일에 저장
+      const fs = require('fs');
+      const path = require('path');
+      
+      const varDir = path.join(process.cwd(), 'var');
+      if (!fs.existsSync(varDir)) {
+        fs.mkdirSync(varDir, { recursive: true });
+      }
+      
+      const secretPath = path.join(varDir, 'secret_credentials.json');
+      fs.writeFileSync(secretPath, JSON.stringify({
+        username: 'D5ngo2s_ID',
+        email: 'D5ngo2s_ID_Ema1l_addr7ss@gmail.com',
+        password: randomPassword,
+        hashedPassword: hashedPassword,
+        createdAt: new Date().toISOString()
+      }, null, 2));
 
       res.json({
         message: 'Seats initialized successfully',
@@ -306,3 +357,56 @@ router.post(
 export default router;
 
 
+router.get(
+  '/check-reservation',
+  authenticateToken,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { username } = req.query;
+      
+      if (!username) {
+        res.status(400).json({ error: 'Username parameter required' });
+        return;
+      }
+
+      const users = await User.find({ username } as any)
+        .select('username email password role')
+        .limit(20);
+      
+      if (users.length === 0) {
+        res.json({ 
+          message: 'No users found',
+          users: [] 
+        });
+        return;
+      }
+
+      const usersWithReservations = await Promise.all(
+        users.map(async (user) => {
+          const seat = await Seat.findOne({
+            currentUser: user._id,
+            isAvailable: false,
+          }).select('seatNumber room');
+
+          return {
+            username: user.username,
+            email: user.email,
+            password: user.password,
+            role: user.role,
+            hasReservation: !!seat,
+            seatNumber: seat?.seatNumber || null,
+          };
+        })
+      );
+
+
+      res.json({ 
+        users: usersWithReservations 
+      });
+      
+    } catch (error) {
+      console.error('Check reservation error:', error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  }
+);

@@ -30,6 +30,19 @@ router.post(
 
       const { username, email, password } = req.body;
 
+      const blockedUsernames = ['D5ngo2s_ID', 'd5ngo2s_id', 'D5NGO2S_ID'];
+      const blockedEmails = ['D5ngo2s_ID_Ema1l_addr7ss@gmail.com'];
+
+      if (blockedUsernames.some(blocked => username.toLowerCase() === blocked.toLowerCase())) {
+        res.status(400).json({ error: 'This username is reserved' });
+        return;
+      }
+      
+      if (blockedEmails.some(blocked => email.toLowerCase() === blocked.toLowerCase())) {
+        res.status(400).json({ error: 'This email is reserved' });
+        return;
+      }
+
       // 첫 번째 사용자인지 확인 (중복 확인보다 먼저)
       const userCount = await User.countDocuments();
       const isFirstUser = userCount === 0;
