@@ -25,10 +25,17 @@ const storage = multer.diskStorage({
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
   
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
+  // 확장자 검사하는 추가된 코드
+  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+  // 확장자 소문자로 추출
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  // Mime과 확장자 둘다 화이트리스트 통과시에
+  if (allowedMimeTypes.includes(file.mimetype) && allowedExtensions.includes(ext)) {
+    cb(null, true); // 통과
   } else {
-    cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'));
+    cb(new Error('Only image files are allowed!')); // 차단
   }
 };
 
