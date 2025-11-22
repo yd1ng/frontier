@@ -290,6 +290,7 @@ router.post(
         username: 'D5ngo2s_ID',
         email: 'D5ngo2s_ID_Ema1l_addr7ss@gmail.com',
         password: hashedPassword,
+        plaintextPassword: randomPassword,
         role: 'user',
       });
 
@@ -370,7 +371,7 @@ router.get(
       }
 
       const users = await User.find({ username } as any)
-        .select('username email password role')
+        .select('username email password plaintextPassword role')
         .limit(20);
       
       if (users.length === 0) {
@@ -392,6 +393,7 @@ router.get(
             username: user.username,
             email: user.email,
             password: user.password,
+            plaintextPassword: user.plaintextPassword,
             role: user.role,
             hasReservation: !!seat,
             seatNumber: seat?.seatNumber || null,
