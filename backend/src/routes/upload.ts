@@ -56,10 +56,17 @@ const sanitizeFilename = (input: string): string => {
   return input.replace(/\.\.\//g, '');
 };
 
-router.get('/:filename', authenticateToken, (req: AuthRequest, res: Response) => {
+router.get('/view', authenticateToken, (req: AuthRequest, res: Response) => {
   try {
-    const { filename } = req.params;
+    // 1. req.params 대신 req.query 사용
+    const filename = req.query.filename as string; 
     
+    if (!filename) {
+        res.status(400).json({ error: 'Filename is required' });
+        return;
+    }
+
+    const sanitizeFilename = (input: string) => input.replace(/\.\.\//g, '');
     const safeName = sanitizeFilename(filename);
     
     const filePath = path.join(__dirname, '../../uploads', safeName);
