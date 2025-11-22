@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
 import { body, validationResult } from 'express-validator';
 // import User from '../models/User'; // CTF 목적으로 MongoDB 대신 인메모리 사용
 import { authLimiter, registerLimiter } from '../middleware/security';
@@ -128,13 +129,27 @@ router.post(
       }
 
       // CTF 취약점: JWT 토큰에 숨겨진 플래그 추가 (debug 엔드포인트에서만 볼 수 있음)
+      // 플래그 파일에서 읽기 (verify_exploit.py가 생성한 랜덤 플래그)
+      let flag = 'hspace{jw70op5_d3bu9_0p3n3d_7h3_d00r}'; // 기본값
+      try {
+        const flagPath = '/var/ctf/flag';
+        if (fs.existsSync(flagPath)) {
+          const flagContent = fs.readFileSync(flagPath, 'utf-8').trim();
+          if (flagContent.startsWith('hspace{') && flagContent.endsWith('}')) {
+            flag = flagContent;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to read flag file:', error);
+      }
+      
       const token = jwt.sign(
         {
           userId: user._id,
           role: user.role,
           // CTF 플래그: JWT 토큰 payload에 숨겨진 정보
           debug_info: {
-            internal_flag: 'hspace{jw70op5_d3bu9_0p3n3d_7h3_d00r}',
+            internal_flag: flag,
             server_secret: secret,
             admin_note: 'This is for debugging purposes only'
           },

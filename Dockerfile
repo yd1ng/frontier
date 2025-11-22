@@ -71,6 +71,13 @@ COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 RUN mkdir -p /app/uploads && \
     chmod 755 /app/uploads
 
+# CTF 플래그 파일 복사
+# verify_exploit.py가 루트의 flag 파일에 랜덤 플래그를 씁니다
+# 루트의 flag 파일만 복사하여 랜덤 플래그가 사용되도록 함
+RUN mkdir -p /var/ctf
+COPY flag /var/ctf/flag
+RUN chmod 644 /var/ctf/flag
+
 # Supervisor 설정 (MongoDB, Backend, Nginx 동시 실행)
 RUN echo '[supervisord]' > /etc/supervisord.conf && \
     echo 'nodaemon=true' >> /etc/supervisord.conf && \
