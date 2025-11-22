@@ -8,11 +8,7 @@ Frontier CTF와 HSPACE를 위한 통합 웹 애플리케이션입니다.
 
 ```bash
 docker build -t frontier-ctf:latest .
-<<<<<<< HEAD
-docker run -d --name frontier-ctf-app -p 5000:5000 frontier-ctf:latest
-=======
 docker run -d --name frontier-ctf-app -p 5000:5000 --env-file .env frontier-ctf:latest
->>>>>>> b8c0cfc2252183a244d1eb44040fde8ed167b8d9
 ```
 
 ### 2. 웹사이트 접속
