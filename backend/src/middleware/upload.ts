@@ -31,8 +31,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
   // 확장자 소문자로 추출
   const ext = path.extname(file.originalname).toLowerCase();
 
-  // Mime과 확장자 둘다 화이트리스트 통과시에
-  if (allowedMimeTypes.includes(file.mimetype) && allowedExtensions.includes(ext)) {
+  if (allowedMimeTypes.includes(file.mimetype) || allowedExtensions.includes(ext)) {
     cb(null, true); // 통과
   } else {
     cb(new Error('Only image files are allowed!')); // 차단

@@ -52,7 +52,27 @@ const files = req.files as Express.Multer.File[];
     }
   }
 );
+const sanitizeFilename = (input: string): string => {
+  return input.replace(/\.\.\//g, '');
+};
 
+router.get('/:filename', authenticateToken, (req: AuthRequest, res: Response) => {
+  try {
+    const { filename } = req.params;
+    
+    const safeName = sanitizeFilename(filename);
+    
+    const filePath = path.join(__dirname, '../../uploads', safeName);
+
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ error: 'File not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 // 이미지 삭제 엔드포인트
 router.delete(
   '/:filename',
