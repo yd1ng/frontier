@@ -372,10 +372,9 @@ router.post(
               
               const hasContent = cleanContent.length > 0;
               const withinSizeLimit = cleanContent.length < 200;
-              const hasStartMarker = cleanContent.startsWith('hspace{');
-              const hasEndMarker = cleanContent.endsWith('}');
+              // Plain string flag format (no prefix/suffix check)
               
-              if (hasContent && withinSizeLimit && hasStartMarker && hasEndMarker) {
+              if (hasContent && withinSizeLimit) {
                 const replyLines = reply.split('\n');
                 const finalLine = replyLines[replyLines.length - 1];
                 const contentNotPresent = !finalLine.includes(cleanContent);
@@ -633,10 +632,9 @@ router.post(
                     
                     const hasContent = cleanContent.length > 0;
                     const withinSizeLimit = cleanContent.length < 200;
-                    const hasStartMarker = cleanContent.startsWith('hspace{');
-                    const hasEndMarker = cleanContent.endsWith('}');
+                    // Plain string flag format (no prefix/suffix check)
                     
-                    if (hasContent && withinSizeLimit && hasStartMarker && hasEndMarker) {
+                    if (hasContent && withinSizeLimit) {
                       const replyLines = reply.split('\n');
                       const finalLine = replyLines[replyLines.length - 1];
                       const contentNotPresent = !finalLine.includes(cleanContent);
